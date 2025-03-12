@@ -66,7 +66,7 @@ export default function RootLayout({
     <html lang="en" className={firaGo.variable}>
       <body className="">
         <Header />
-        <main>{children}</main>
+        <main className="max-w-[1920px] mx-auto px-[120px]">{children}</main>
       </body>
     </html>
   );
