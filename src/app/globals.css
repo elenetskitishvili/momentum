@@ -6,8 +6,65 @@ body {
 
 @theme {
   --color-primary: #8338ec;
-  --color-primary-light: #8f4cee;
+  --color-primary-light: #b588f4;
   --color-primary-text: #212529;
   --color-dark-text: #0d0f10;
+  --color-light-text: #343a40;
+  --color-lighter-text: #6c757d;
   --color-border-grey: #dee2e6;
+  --color-border-grey-darker: #ced4da;
+}
+
+@layer utilities {
+  @keyframes overlayFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes overlayFadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes modalFadeOut {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+  }
+
+  .modal-overlay {
+    animation: overlayFadeIn 0.3s ease forwards;
+  }
+  .modal-window {
+    animation: modalFadeIn 0.3s ease forwards;
+  }
+
+  .modal-overlay.closing {
+    animation: overlayFadeOut 0.3s ease forwards;
+  }
+  .modal-window.closing {
+    animation: modalFadeOut 0.3s ease forwards;
+  }
 }

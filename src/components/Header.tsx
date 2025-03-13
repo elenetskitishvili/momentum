@@ -1,16 +1,14 @@
 import Image from "next/image";
+import AddEmployeeModal from "./AddEmployeeModal";
 
 export default function Header() {
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-white">
+    <header className="fixed top-0 left-0 w-full z-40 bg-white">
       <div className="max-w-[1920px] mx-auto px-[120px] flex items-center justify-between">
         <Image src="/icons/logo.svg" alt="Logo" width={210} height={38} />
 
         <div className="py-[30px] flex items-center gap-10">
-          <button className="py-[11px] px-5 text-base font-normal leading-[100%] rounded-[5px] border border-primary text-primary-text cursor-pointer hover:text-primary transition-colors duration-200 ease-in-out">
-            თანამშრომლის შექმნა
-          </button>
-
+          <AddEmployeeModal />
           <button className="flex items-center gap-1 px-5 text-base font-normal leading-[100%] bg-primary text-white rounded-[5px] cursor-pointer hover:bg-primary-light transition-colors duration-200 ease-in-out">
             <Image
               src="/icons/plus-icon.svg"

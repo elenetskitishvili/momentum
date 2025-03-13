@@ -1,17 +1,19 @@
-import React from "react";
-
 type ArrowIconProps = React.SVGProps<SVGSVGElement> & {
   color?: string;
+  width?: number | string;
+  height?: number | string;
 };
 
 export default function ArrowIcon({
   color = "currentColor",
+  width = 14,
+  height = 8,
   ...props
 }: ArrowIconProps) {
   return (
     <svg
-      width="14"
-      height="8"
+      width={width}
+      height={height}
       viewBox="0 0 14 8"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
