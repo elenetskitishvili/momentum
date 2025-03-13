@@ -55,7 +55,7 @@ export default function CustomSelect({
   return (
     <div className="relative w-full">
       <div
-        className={`py-3 pl-2.5 pr-4 text-sm leading-[100%] cursor-pointer flex justify-between items-center w-full transition-colors duration-300 ${
+        className={`h-[42px] pl-2.5 pr-4 text-sm leading-[100%] cursor-pointer flex justify-between items-center w-full transition-colors duration-300 ${
           borderOpen
             ? "border-t border-x border-primary rounded-t-md"
             : "border border-border-grey-darker rounded-md"
@@ -77,6 +77,7 @@ export default function CustomSelect({
           />
         </span>
       </div>
+
       <ul
         className={`absolute bg-white border-b border-x border-primary rounded-b-md w-full z-10 transform transition-all duration-300 origin-top ${
           isOpen
@@ -87,7 +88,7 @@ export default function CustomSelect({
         {options.map((option) => (
           <li
             key={option.value}
-            className="py-2 px-3 text-sm cursor-pointer"
+            className="py-3 px-3 text-sm cursor-pointer"
             onClick={() => handleSelect(option.value)}
           >
             {option.label}
