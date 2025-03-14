@@ -13,6 +13,8 @@ body {
   --color-lighter-text: #6c757d;
   --color-border-grey: #dee2e6;
   --color-border-grey-darker: #ced4da;
+  --color-custom-green: #08a508;
+  --color-custom-red: #fa4d4d;
 }
 
 @layer utilities {

@@ -1,20 +1,17 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState } from "react";
 import { z } from "zod";
-import debounce from "lodash/debounce";
+import { addEmployee } from "@/actions/addEmployee";
 
-import CheckIcon from "./CheckIcon";
+import ValidatedTextInput from "./ValidatedTextInput";
 import ImageUpload from "./ImageUpload";
 import CustomSelect from "./CustomSelect";
+import useDebouncedValue from "@/hooks/useDebouncedValue";
+import useDepartments from "@/hooks/useDepartments";
 
 const nameSchema = z
   .string()
   .min(2, { message: "მინიმუმ 2 სიმბოლო" })
   .max(255, { message: "მაქსიმუმ 255 სიმბოლო" });
-
-interface Department {
-  id: number;
-  name: string;
-}
 
 interface AddEmployeeFormProps {
   onClose: () => void;
@@ -23,78 +20,21 @@ interface AddEmployeeFormProps {
 export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
   const [firstName, setFirstName] = useState("");
   const [firstNameTouched, setFirstNameTouched] = useState(false);
+  const debouncedFirstName = useDebouncedValue(firstName, 300);
 
   const [lastName, setLastName] = useState("");
   const [lastNameTouched, setLastNameTouched] = useState(false);
-
-  // Local state for debounced values:
-  const [debouncedFirstName, setDebouncedFirstName] = useState(firstName);
-  const [debouncedLastName, setDebouncedLastName] = useState(lastName);
+  const debouncedLastName = useDebouncedValue(lastName, 300);
 
   const [image, setImage] = useState<File | null>(null);
   const [imageError, setImageError] = useState("");
 
   const [department, setDepartment] = useState("");
   const [departmentError, setDepartmentError] = useState("");
-  const [departmentOptions, setDepartmentOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
 
-  useEffect(() => {
-    async function fetchDepartments() {
-      try {
-        const response = await fetch(
-          "https://momentum.redberryinternship.ge/api/departments"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch departments");
-        }
-        const data: Department[] = await response.json();
-        const mapped = data.map((dept) => ({
-          value: dept.id.toString(),
-          label: dept.name,
-        }));
-        setDepartmentOptions(mapped);
-      } catch (error) {
-        console.error(error);
-      }
-    }
+  const { departments: departmentOptions } = useDepartments();
 
-    fetchDepartments();
-  }, []);
-
-  const updateDebouncedFirstName = useMemo(
-    () =>
-      debounce((value: string) => {
-        setDebouncedFirstName(value);
-      }, 300),
-    []
-  );
-
-  const updateDebouncedLastName = useMemo(
-    () =>
-      debounce((value: string) => {
-        setDebouncedLastName(value);
-      }, 300),
-    []
-  );
-
-  useEffect(() => {
-    updateDebouncedFirstName(firstName);
-  }, [firstName, updateDebouncedFirstName]);
-
-  useEffect(() => {
-    updateDebouncedLastName(lastName);
-  }, [lastName, updateDebouncedLastName]);
-
-  useEffect(() => {
-    return () => {
-      updateDebouncedFirstName.cancel();
-      updateDebouncedLastName.cancel();
-    };
-  }, [updateDebouncedFirstName, updateDebouncedLastName]);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const firstNameResult = nameSchema.safeParse(firstName);
@@ -123,113 +63,49 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
       return;
     }
 
-    console.log("Submitting:", { firstName, lastName, image, department });
-  };
-
-  const getMinTextColor = (value: string, touched: boolean) => {
-    if (!touched) return "text-lighter-text"; // grey when untouched
-    return value.length >= 2 ? "text-green-500" : "text-red-500";
-  };
-
-  const getMaxTextColor = (value: string, touched: boolean) => {
-    if (!touched) return "text-lighter-text";
-    return value.length <= 255 ? "text-green-500" : "text-red-500";
-  };
-
-  const getMinIconColor = (value: string, touched: boolean) => {
-    if (!touched) return "#9ca3af";
-    return value.length >= 2 ? "#22c55e" : "#ef4444";
-  };
-
-  const getMaxIconColor = (value: string, touched: boolean) => {
-    if (!touched) return "#9ca3af";
-    return value.length <= 255 ? "#22c55e" : "#ef4444";
+    try {
+      const response = await addEmployee({
+        firstName,
+        lastName,
+        department,
+        image: image as File,
+      });
+      console.log("Employee added:", response);
+    } catch (error) {
+      console.error("Error adding employee:", error);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <div className="grid grid-cols-2 gap-[45px] max-w-[813px]">
-        <div>
-          <label
-            className="text-sm text-light-text font-medium leading-[100%] mb-[3px]"
-            htmlFor="firstName"
-          >
-            სახელი*
-          </label>
-          <input
-            className="py-3 pl-2.5 pr-7 text-sm leading-[100%] rounded-md border border-border-grey-darker mb-1.5 w-full"
-            type="text"
-            id="firstName"
-            value={firstName}
-            onChange={(e) => {
-              if (!firstNameTouched && e.target.value !== "") {
-                setFirstNameTouched(true);
-              }
-              setFirstName(e.target.value);
-            }}
-          />
-          <div className="flex items-center gap-0.5 text-[10px] leading-[100%] font-[350] mb-0.5">
-            <CheckIcon
-              color={getMinIconColor(debouncedFirstName, firstNameTouched)}
-            />
-            <span
-              className={getMinTextColor(debouncedFirstName, firstNameTouched)}
-            >
-              მინიმუმ 2 სიმბოლო
-            </span>
-          </div>
-          <div className="flex items-center gap-0.5 text-[10px] leading-[100%] font-[350]">
-            <CheckIcon
-              color={getMaxIconColor(debouncedFirstName, firstNameTouched)}
-            />
-            <span
-              className={getMaxTextColor(debouncedFirstName, firstNameTouched)}
-            >
-              მაქსიმუმ 255 სიმბოლო
-            </span>
-          </div>
-        </div>
+        <ValidatedTextInput
+          label="სახელი"
+          id="firstName"
+          value={firstName}
+          touched={firstNameTouched}
+          debouncedValue={debouncedFirstName}
+          onChange={(e) => {
+            if (!firstNameTouched && e.target.value !== "") {
+              setFirstNameTouched(true);
+            }
+            setFirstName(e.target.value);
+          }}
+        />
 
-        <div>
-          <label
-            className="text-sm text-light-text font-medium leading-[100%] mb-[3px]"
-            htmlFor="lastName"
-          >
-            გვარი*
-          </label>
-          <input
-            className="py-3 pl-2.5 pr-7 text-sm leading-[100%] rounded-md border border-border-grey-darker mb-1.5 w-full"
-            type="text"
-            id="lastName"
-            value={lastName}
-            onChange={(e) => {
-              if (!lastNameTouched && e.target.value !== "") {
-                setLastNameTouched(true);
-              }
-              setLastName(e.target.value);
-            }}
-          />
-          <div className="flex items-center gap-0.5 text-[10px] leading-[100%] font-[350] mb-0.5">
-            <CheckIcon
-              color={getMinIconColor(debouncedLastName, lastNameTouched)}
-            />
-            <span
-              className={getMinTextColor(debouncedLastName, lastNameTouched)}
-            >
-              მინიმუმ 2 სიმბოლო
-            </span>
-          </div>
-          <div className="flex items-center gap-0.5 text-[10px] leading-[100%] font-[350]">
-            <CheckIcon
-              color={getMaxIconColor(debouncedLastName, lastNameTouched)}
-            />
-            <span
-              className={getMaxTextColor(debouncedLastName, lastNameTouched)}
-            >
-              მაქსიმუმ 255 სიმბოლო
-            </span>
-          </div>
-        </div>
+        <ValidatedTextInput
+          label="გვარი"
+          id="lastName"
+          value={lastName}
+          touched={lastNameTouched}
+          debouncedValue={debouncedLastName}
+          onChange={(e) => {
+            if (!lastNameTouched && e.target.value !== "") {
+              setLastNameTouched(true);
+            }
+            setLastName(e.target.value);
+          }}
+        />
 
         <div className="col-span-2">
           <div className="flex items-center justify-between">
@@ -237,7 +113,7 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
               ავატარი*
             </p>
             {imageError && (
-              <span className="text-red-500 text-xs ml-2">{imageError}</span>
+              <span className="text-custom-red text-xs ml-2">{imageError}</span>
             )}
           </div>
           <ImageUpload onChange={setImage} />
@@ -249,7 +125,7 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
               დეპარტამენტი*
             </label>
             {departmentError && (
-              <span className="text-red-500 text-xs ml-2">
+              <span className="text-custom-red text-xs ml-2">
                 {departmentError}
               </span>
             )}
