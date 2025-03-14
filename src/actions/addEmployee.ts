@@ -18,7 +18,8 @@ interface AddEmployeeResponse {
 export async function addEmployee(
   employeeData: EmployeeData
 ): Promise<AddEmployeeResponse> {
-  const token = process.env.API_TOKEN;
+  const token = process.env.NEXT_PUBLIC_API_TOKEN;
+
   if (!token) {
     throw new Error("API token is missing");
   }

@@ -13,3 +13,14 @@ export interface Department {
   id: number;
   name: string;
 }
+
+export interface Priority {
+  id: number;
+  name: string;
+  icon: string;
+}
+
+export interface Status {
+  id: number;
+  name: string;
+}

@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import ArrowIcon from "./ArrowIcon";
+import Image from "next/image";
 
 interface Option {
   value: string;
   label: string;
-  image?: string; // Optional: for employee options to display image
+  image?: string;
+  icon?: string;
 }
 
 interface CustomSelectProps {
@@ -71,10 +73,20 @@ export default function CustomSelect({
       >
         <div className="flex items-center">
           {selectedOption && selectedOption.image ? (
-            <img
+            <Image
               src={selectedOption.image}
               alt={selectedOption.label}
-              className="w-6 h-6 rounded-full mr-2"
+              width={28}
+              height={28}
+              className="rounded-full mr-1.5"
+            />
+          ) : selectedOption && selectedOption.icon ? (
+            <Image
+              src={selectedOption.icon}
+              alt={selectedOption.label}
+              width={16}
+              height={18}
+              className="mr-1.5"
             />
           ) : null}
           {selectedOption ? selectedOption.label : placeholder}
@@ -110,10 +122,20 @@ export default function CustomSelect({
             onClick={() => handleSelect(option.value)}
           >
             {option.image ? (
-              <img
+              <Image
                 src={option.image}
                 alt={option.label}
-                className="w-6 h-6 rounded-full mr-2"
+                width={28}
+                height={28}
+                className="rounded-full mr-1.5"
+              />
+            ) : option.icon ? (
+              <Image
+                src={option.icon}
+                alt={option.label}
+                width={16}
+                height={18}
+                className="mr-1.5"
               />
             ) : null}
             {option.label}
