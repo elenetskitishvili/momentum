@@ -1,12 +1,12 @@
 import { Department, Employee } from "@/types/types";
 
 export const fetchEmployees = async function (): Promise<Employee[]> {
-  const token = process.env.API_TOKEN;
+  // const token = process.env.API_TOKEN;
 
-  if (!token) {
-    console.error("API token is missing");
-    return [];
-  }
+  // if (!token) {
+  //   console.error("API token is missing");
+  //   return [];
+  // }
 
   try {
     const res = await fetch(
@@ -14,7 +14,7 @@ export const fetchEmployees = async function (): Promise<Employee[]> {
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer 9e6c8a72-af38-4e28-b72f-89751db4b88e`,
         },
       }
     );
@@ -24,6 +24,7 @@ export const fetchEmployees = async function (): Promise<Employee[]> {
     }
 
     const employees: Employee[] = await res.json();
+
     return employees;
   } catch (err) {
     console.error("Error fetching employees:", (err as Error).message);

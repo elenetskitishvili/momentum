@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 import { fetchDepartments } from "@/lib/data-service";
 

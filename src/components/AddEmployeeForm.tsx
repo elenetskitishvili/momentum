@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { z } from "zod";
 import { addEmployee } from "@/actions/addEmployee";
 
-import ValidatedTextInput from "./ValidatedTextInput";
+import ValidatedTextField from "./ValidatedTextField";
 import ImageUpload from "./ImageUpload";
 import CustomSelect from "./CustomSelect";
 import useDebouncedValue from "@/hooks/useDebouncedValue";
@@ -32,7 +32,6 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
 
   const [department, setDepartment] = useState("");
   const [departmentError, setDepartmentError] = useState("");
-
   const { departments: departmentOptions } = useDepartments();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,7 +79,7 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
   return (
     <form onSubmit={handleSubmit}>
       <div className="grid grid-cols-2 gap-[45px] max-w-[813px]">
-        <ValidatedTextInput
+        <ValidatedTextField
           label="სახელი"
           id="firstName"
           value={firstName}
@@ -94,7 +93,7 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
           }}
         />
 
-        <ValidatedTextInput
+        <ValidatedTextField
           label="გვარი"
           id="lastName"
           value={lastName}

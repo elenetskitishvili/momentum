@@ -1,5 +1,6 @@
 import Image from "next/image";
 import AddEmployeeModal from "./AddEmployeeModal";
+import Link from "next/link";
 
 export default function Header() {
   return (
@@ -9,7 +10,10 @@ export default function Header() {
 
         <div className="py-[30px] flex items-center gap-10">
           <AddEmployeeModal />
-          <button className="flex items-center gap-1 px-5 text-base font-normal leading-[100%] bg-primary text-white rounded-[5px] cursor-pointer hover:bg-primary-light transition-colors duration-200 ease-in-out">
+          <Link
+            href={"/add-task"}
+            className="flex items-center gap-1 px-5 text-base font-normal leading-[100%] bg-primary text-white rounded-[5px] cursor-pointer hover:bg-primary-light transition-colors duration-200 ease-in-out"
+          >
             <Image
               src="/icons/plus-icon.svg"
               alt="plus icon"
@@ -17,7 +21,7 @@ export default function Header() {
               height={20}
             />
             <span className="py-[12px]">შექმენი ახალი დავალება</span>
-          </button>
+          </Link>
         </div>
       </div>
     </header>
