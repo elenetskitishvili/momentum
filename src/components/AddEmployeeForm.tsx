@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { z } from "zod";
 import { addEmployee } from "@/actions/addEmployee";

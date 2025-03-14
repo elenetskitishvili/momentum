@@ -1,9 +1,5 @@
 import { useState, useEffect } from "react";
-
-interface Department {
-  id: number;
-  name: string;
-}
+import { fetchDepartments } from "@/lib/data-service";
 
 interface DepartmentOption {
   value: string;
@@ -16,18 +12,12 @@ export default function useDepartments() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchDepartments() {
+    async function getDepartments() {
       try {
-        const response = await fetch(
-          "https://momentum.redberryinternship.ge/api/departments"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch departments");
-        }
-        const data: Department[] = await response.json();
-        const options = data.map((dept) => ({
-          value: dept.id.toString(),
-          label: dept.name,
+        const data = await fetchDepartments();
+        const options = data.map((department) => ({
+          value: department.id.toString(),
+          label: department.name,
         }));
         setDepartments(options);
       } catch (err) {
@@ -36,7 +26,8 @@ export default function useDepartments() {
         setLoading(false);
       }
     }
-    fetchDepartments();
+
+    getDepartments();
   }, []);
 
   return { departments, loading, error };
