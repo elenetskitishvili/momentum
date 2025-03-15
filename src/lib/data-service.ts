@@ -1,4 +1,4 @@
-import { Department, Employee, Priority, Status } from "@/types/types";
+import { Department, Employee, Priority, Status, Task } from "@/types/types";
 
 export const fetchEmployees = async function (): Promise<Employee[]> {
   const token = process.env.NEXT_PUBLIC_API_TOKEN;
@@ -16,8 +16,6 @@ export const fetchEmployees = async function (): Promise<Employee[]> {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-
-        cache: "no-store",
       }
     );
 
@@ -70,7 +68,7 @@ export const fetchrPriorities = async function (): Promise<Priority[]> {
   }
 };
 
-export const fetchrStatuses = async function (): Promise<Status[]> {
+export const fetchStatuses = async function (): Promise<Status[]> {
   try {
     const res = await fetch(
       "https://momentum.redberryinternship.ge/api/statuses"
@@ -84,6 +82,38 @@ export const fetchrStatuses = async function (): Promise<Status[]> {
     return statuses;
   } catch (err) {
     console.error("Error fetching statuses:", (err as Error).message);
+    return [];
+  }
+};
+
+export const fetchTasks = async function (): Promise<Task[]> {
+  const token = process.env.NEXT_PUBLIC_API_TOKEN;
+
+  if (!token) {
+    console.error("API token is missing");
+    return [];
+  }
+
+  try {
+    const res = await fetch(
+      "https://momentum.redberryinternship.ge/api/tasks",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch tasks");
+    }
+
+    const tasks: Task[] = await res.json();
+
+    return tasks;
+  } catch (err) {
+    console.error("Error fetching tasks:", (err as Error).message);
     return [];
   }
 };

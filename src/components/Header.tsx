@@ -6,7 +6,9 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 w-full z-40 bg-white">
       <div className="max-w-[1920px] mx-auto px-[120px] flex items-center justify-between">
-        <Image src="/icons/logo.svg" alt="Logo" width={210} height={38} />
+        <Link href={"/"}>
+          <Image src="/icons/logo.svg" alt="Logo" width={210} height={38} />
+        </Link>
 
         <div className="py-[30px] flex items-center gap-10">
           <AddEmployeeBtnMain />
