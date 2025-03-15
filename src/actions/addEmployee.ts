@@ -1,5 +1,7 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 interface EmployeeData {
   firstName: string;
   lastName: string;
@@ -48,5 +50,8 @@ export async function addEmployee(
   }
 
   const data = (await response.json()) as AddEmployeeResponse;
+
+  revalidatePath("/add-task");
+
   return data;
 }

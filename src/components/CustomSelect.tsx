@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from "react";
-import ArrowIcon from "./ArrowIcon";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import AddEmployeeBtnSecondary from "./AddEmployeeBtnSecondary";
+import ArrowIcon from "./ArrowIcon";
 
 interface Option {
   value: string;
@@ -14,6 +15,8 @@ interface CustomSelectProps {
   placeholder?: string;
   onChange?: (value: string) => void;
   disabled?: boolean;
+  showAddEmployee?: boolean;
+  onAddEmployee?: () => void;
 }
 
 export default function CustomSelect({
@@ -21,6 +24,8 @@ export default function CustomSelect({
   placeholder = "",
   onChange,
   disabled = false,
+  showAddEmployee = false,
+  onAddEmployee,
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [borderOpen, setBorderOpen] = useState(false);
@@ -111,13 +116,29 @@ export default function CustomSelect({
             : "scale-y-0 opacity-0 pointer-events-none"
         }`}
       >
+        {showAddEmployee && (
+          <li
+            className="hover:bg-grey-hover"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onAddEmployee) onAddEmployee();
+              setIsOpen(false);
+              borderTimeoutRef.current = setTimeout(
+                () => setBorderOpen(false),
+                150
+              );
+            }}
+          >
+            <AddEmployeeBtnSecondary />
+          </li>
+        )}
         {options.map((option) => (
           <li
             key={option.value}
-            className={`py-3 px-3 text-sm flex items-center ${
+            className={`py-2.5 px-3.5 text-sm flex items-center ${
               disabled
-                ? "cursor-not-allowed text-gray-400"
-                : "cursor-pointer hover:bg-gray-100"
+                ? "cursor-not-allowed text-border-grey-darker"
+                : "cursor-pointer hover:bg-grey-hover"
             }`}
             onClick={() => handleSelect(option.value)}
           >

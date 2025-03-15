@@ -8,6 +8,7 @@ import ImageUpload from "./ImageUpload";
 import CustomSelect from "./CustomSelect";
 import useDebouncedValue from "@/hooks/useDebouncedValue";
 import useDepartments from "@/hooks/useDepartments";
+import { useRouter } from "next/navigation";
 
 const nameSchema = z
   .string()
@@ -33,6 +34,8 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
   const [department, setDepartment] = useState("");
   const [departmentError, setDepartmentError] = useState("");
   const { departments: departmentOptions } = useDepartments();
+
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,13 +67,14 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
     }
 
     try {
-      const response = await addEmployee({
+      await addEmployee({
         firstName,
         lastName,
         department,
         image: image as File,
       });
-      console.log("Employee added:", response);
+      router.refresh();
+      onClose();
     } catch (error) {
       console.error("Error adding employee:", error);
     }

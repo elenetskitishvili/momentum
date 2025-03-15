@@ -66,7 +66,7 @@ export default function AddTaskForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("form submitted");
+    console.log("form submitted", priority, status, employee);
   };
 
   return (
@@ -156,6 +156,7 @@ export default function AddTaskForm({
               }
             }}
             disabled={isEmployeeSelectDisabled}
+            showAddEmployee={true}
           />
         </div>
 

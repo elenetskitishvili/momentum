@@ -1,5 +1,5 @@
 import Image from "next/image";
-import AddEmployeeModal from "./AddEmployeeModal";
+import AddEmployeeBtnMain from "./AddEmployeeBtnMain";
 import Link from "next/link";
 
 export default function Header() {
@@ -9,7 +9,7 @@ export default function Header() {
         <Image src="/icons/logo.svg" alt="Logo" width={210} height={38} />
 
         <div className="py-[30px] flex items-center gap-10">
-          <AddEmployeeModal />
+          <AddEmployeeBtnMain />
           <Link
             href={"/add-task"}
             className="flex items-center gap-1 px-5 text-base font-normal leading-[100%] bg-primary text-white rounded-[5px] cursor-pointer hover:bg-primary-light transition-colors duration-200 ease-in-out"

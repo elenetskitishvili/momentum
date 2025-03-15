@@ -16,6 +16,8 @@ export const fetchEmployees = async function (): Promise<Employee[]> {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+
+        cache: "no-store",
       }
     );
 
