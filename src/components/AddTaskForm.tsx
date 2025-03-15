@@ -6,6 +6,7 @@ import CustomSelect from "./CustomSelect";
 import CustomDatePicker from "./CustomDatePicker";
 import useFilteredEmployees from "@/hooks/useFilteredEmployees";
 import { Department, Employee, Priority, Status } from "@/types/types";
+import { addTask } from "@/actions/addTask";
 
 interface AddTaskFormProps {
   departments: Department[];
@@ -28,25 +29,25 @@ export default function AddTaskForm({
 
   const [department, setDepartment] = useState("");
   const [departmentError, setDepartmentError] = useState("");
-  const departmentOptions = departments.map((department: Department) => ({
-    value: department.id.toString(),
-    label: department.name,
+  const departmentOptions = departments.map((dep: Department) => ({
+    value: dep.id.toString(),
+    label: dep.name,
   }));
   const selectedDepartment = department ? Number(department) : null;
 
   const [priority, setPriority] = useState("");
   const [priorityError, setPriorityError] = useState("");
-  const priorityOptions = priorities.map((priority: Priority) => ({
-    value: priority.id.toString(),
-    label: priority.name,
-    icon: priority.icon,
+  const priorityOptions = priorities.map((p: Priority) => ({
+    value: p.id.toString(),
+    label: p.name,
+    icon: p.icon,
   }));
 
   const [status, setStatus] = useState("");
   const [statusError, setStatusError] = useState("");
-  const statusOptions = statuses.map((status: Status) => ({
-    value: status.id.toString(),
-    label: status.name,
+  const statusOptions = statuses.map((s: Status) => ({
+    value: s.id.toString(),
+    label: s.name,
   }));
 
   const [employee, setEmployee] = useState("");
@@ -55,24 +56,67 @@ export default function AddTaskForm({
   const { filteredEmployees, loading: employeesLoading } =
     useFilteredEmployees(selectedDepartment);
 
-  const employeeOptions = filteredEmployees.map((employee: Employee) => ({
-    value: employee.id.toString(),
-    label: `${employee.name} ${employee.surname}`,
-    image: employee.avatar,
+  const employeeOptions = filteredEmployees.map((emp: Employee) => ({
+    value: emp.id.toString(),
+    label: `${emp.name} ${emp.surname}`,
+    image: emp.avatar,
   }));
 
   const isEmployeeSelectDisabled = !selectedDepartment || employeesLoading;
 
+  const [dueDate, setDueDate] = useState("");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("form submitted", priority, status, employee);
+    let hasError = false;
+    if (!title) {
+      setTitleTouched(true);
+      hasError = true;
+    }
+    if (!department) {
+      setDepartmentError("გთხოვთ აირჩიოთ დეპარტამენტი");
+      hasError = true;
+    }
+    if (!employee) {
+      setEmployeeError("გთხოვთ აირჩიოთ თანამშრომელი");
+      hasError = true;
+    }
+    if (!priority) {
+      setPriorityError("გთხოვთ აირჩიოთ პრიორიტეტი");
+      hasError = true;
+    }
+    if (!status) {
+      setStatusError("გთხოვთ აირჩიოთ სტატუსი");
+      hasError = true;
+    }
+    if (!dueDate) {
+      alert("გთხოვთ აირჩიოთ ვადა");
+      hasError = true;
+    }
+    if (hasError) return;
+
+    const taskData = {
+      name: title,
+      description,
+      due_date: dueDate,
+      status_id: Number(status),
+      employee_id: Number(employee),
+      priority_id: Number(priority),
+    };
+
+    try {
+      const response = await addTask(taskData);
+      console.log("Task added successfully:", response);
+    } catch (error) {
+      console.error("Error adding task:", error);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-[1370px] ">
-      <div className="grid grid-cols-[1fr_32px_1fr_160px_1fr_32px_1fr] grid-rows-[repeat(4,_auto)]items-start gap-y-[55px] w-full">
-        <div className="col-start-1 col-span-3 ">
+    <form onSubmit={handleSubmit} className="max-w-[1370px]">
+      <div className="grid grid-cols-[1fr_32px_1fr_160px_1fr_32px_1fr] grid-rows-[repeat(4,_auto)] items-start gap-y-[55px] w-full">
+        <div className="col-start-1 col-span-3">
           <ValidatedTextField
             label="სათაური"
             id="title"
@@ -177,11 +221,11 @@ export default function AddTaskForm({
               setPriority(value);
               if (value) {
                 setPriorityError("");
-                setPriority("");
               }
             }}
           />
         </div>
+
         <div className="col-start-3">
           <div className="flex items-center justify-between">
             <label className="text-sm text-light-text font-medium leading-[100%] mb-[3px]">
@@ -199,16 +243,17 @@ export default function AddTaskForm({
               setStatus(value);
               if (value) {
                 setStatusError("");
-                setStatus("");
               }
             }}
           />
         </div>
-        <div className="col-start-5">
-          <CustomDatePicker />
+
+        <div className="col-start-5 col-span-3">
+          <CustomDatePicker onChange={(date: string) => setDueDate(date)} />
         </div>
-        <div className="col-start-7 row-start-4 mt-[90px]">
-          <button className="flex items-center gap-1 px-5 text-base font-normal leading-[100%] bg-primary text-white rounded-[5px] cursor-pointer hover:bg-primary-light transition-colors duration-200 ease-in-out">
+
+        <div className="col-start-7 row-start-4 mt-[90px] place-self-end">
+          <button className="flex items-center gap-1 px-5 text-lg font-normal leading-[100%] bg-primary text-white rounded-[5px] cursor-pointer hover:bg-primary-light transition-colors duration-200 ease-in-out">
             <span className="py-[12px]">დავალების შექმნა</span>
           </button>
         </div>
