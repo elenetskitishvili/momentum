@@ -7,15 +7,29 @@ body {
 @theme {
   --color-primary: #8338ec;
   --color-primary-light: #b588f4;
+
   --color-primary-text: #212529;
   --color-dark-text: #0d0f10;
   --color-light-text: #343a40;
   --color-lighter-text: #6c757d;
+
   --color-border-grey: #dee2e6;
   --color-border-grey-darker: #ced4da;
   --color-grey-hover: #f8f9fa;
+
   --color-custom-green: #08a508;
+  --color-custom-green-light: #6fdc6f;
   --color-custom-red: #fa4d4d;
+  --color-custom-red-light: #ff9999;
+  --color-custom-yellow: #f7bc30;
+  --color-custom-yellow-light: #ffd86d;
+  --color-custom-orange: #fb5607;
+  --color-custom-orange-light: #fd9a6a;
+  --color-custom-pink: #ff006e;
+  --color-custom-pink-light: #ff66a8;
+  --color-custom-blue: #3a86ff;
+  --color-custom-blue-light: #89b6ff;
+  --color-custom-purple-light: #c792ea;
 }
 
 @layer utilities {

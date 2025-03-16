@@ -1,32 +1,62 @@
 import { Task } from "@/types/types";
+import { format } from "date-fns";
+import { ka } from "date-fns/locale";
+import Image from "next/image";
+import PriorityLabel from "./PriorityLabel";
+import DepartmentLabel from "./DepartmentLabel";
 
 interface TaskCardProps {
   task: Task;
+  borderClass: string;
 }
 
-export default function TaskCard({ task }: TaskCardProps) {
+const formatGeorgianDate = (isoDate: string) => {
+  const date = new Date(isoDate);
+  return format(date, "d MMM, yyyy", { locale: ka });
+};
+
+export default function TaskCard({ task, borderClass }: TaskCardProps) {
   return (
-    <div className="bg-white shadow-md rounded-lg p-4 border-l-4 border-primary">
+    <li
+      className={`bg-white rounded-[15px] p-5 border ${borderClass} flex flex-col gap-7`}
+    >
       <div className="flex justify-between items-center">
-        <span className="text-sm font-medium text-gray-500">
-          {task.due_date}
-        </span>
-        <span className="text-sm px-2 py-1 rounded bg-gray-200 text-gray-700">
-          {task.priority.name}
+        <div className="flex items-center gap-2.5">
+          <PriorityLabel priority={task.priority} />
+          <DepartmentLabel department={task.department} />
+        </div>
+        <span className="text-xs text-primary-text font-normal">
+          {formatGeorgianDate(task.due_date)}
         </span>
       </div>
-      <h3 className="text-lg font-semibold text-gray-900 mt-2">{task.name}</h3>
-      <p className="text-sm text-gray-600 mt-1">{task.description}</p>
-      <div className="flex items-center mt-3">
-        <img
+
+      <div className="max-w-[320px] mx-auto flex flex-col gap-3">
+        <h4 className="text-[15px] font-medium text-primary-text leading-[100%]">
+          {task.name}
+        </h4>
+        <p className="text-sm font-normal leaidng-[100%] text-light-text">
+          {task.description}
+        </p>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <Image
           src={task.employee.avatar}
           alt={task.employee.name}
-          className="w-8 h-8 rounded-full"
+          width={31}
+          height={31}
+          className="rounded-full"
         />
-        <span className="ml-2 text-sm text-gray-800">
-          {task.employee.name} {task.employee.surname}
-        </span>
+        <div className="flex items-center gap-1">
+          <Image
+            src={"icons/message-icon.svg"}
+            alt="message icon"
+            width={22}
+            height={22}
+          />
+          <span className="text-primary-text text-sm font-normal">8</span>
+        </div>
       </div>
-    </div>
+    </li>
   );
 }
