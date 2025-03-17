@@ -1,5 +1,6 @@
 "use server";
 
+import { Task } from "@/types/types";
 import { revalidatePath } from "next/cache";
 
 interface TaskData {
@@ -11,34 +12,7 @@ interface TaskData {
   priority_id: number;
 }
 
-export interface AddTaskResponse {
-  id: number;
-  name: string;
-  description: string;
-  due_date: string;
-  status: {
-    id: number;
-    name: string;
-  };
-  priority: {
-    id: number;
-    name: string;
-    icon: string;
-  };
-  department: {
-    id: number;
-    name: string;
-  };
-  employee: {
-    id: number;
-    name: string;
-    surname: string;
-    avatar: string;
-    department_id: number;
-  };
-}
-
-export async function addTask(taskData: TaskData): Promise<AddTaskResponse> {
+export async function addTask(taskData: TaskData): Promise<Task> {
   const token = process.env.NEXT_PUBLIC_API_TOKEN;
 
   if (!token) {
@@ -70,7 +44,7 @@ export async function addTask(taskData: TaskData): Promise<AddTaskResponse> {
     );
   }
 
-  const data = (await response.json()) as AddTaskResponse;
+  const data = (await response.json()) as Task;
 
   revalidatePath("/");
 

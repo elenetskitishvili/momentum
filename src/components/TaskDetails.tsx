@@ -43,7 +43,11 @@ export default async function TaskDetails({ task }: { task: Task }) {
               სტატუსი
             </span>
           </div>
-          <UpdateStatusForm statuses={statuses} currentStatus={task.status} />
+          <UpdateStatusForm
+            statuses={statuses}
+            currentStatus={task.status}
+            taskId={task.id}
+          />
 
           <div className="flex items-center gap-2">
             <Image

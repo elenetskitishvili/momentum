@@ -2,8 +2,10 @@
 import { useState } from "react";
 import { Status } from "@/types/types";
 import CustomSelect from "./CustomSelect";
+import { updateStatus } from "@/actions/updateStatus";
 
 interface UpdateStatusFormProps {
+  taskId: number;
   statuses: Status[];
   currentStatus: {
     id: number;
@@ -12,15 +14,11 @@ interface UpdateStatusFormProps {
 }
 
 export default function UpdateStatusForm({
+  taskId,
   statuses,
   currentStatus,
 }: UpdateStatusFormProps) {
-  const [selectedStatus, setSelectedStatus] = useState(
-    currentStatus.id.toString()
-  );
   const [statusError, setStatusError] = useState("");
-
-  console.log(selectedStatus);
 
   const statusOptions = statuses.map((status) => ({
     value: status.id.toString(),
@@ -32,10 +30,18 @@ export default function UpdateStatusForm({
       <CustomSelect
         options={statusOptions}
         placeholder={currentStatus.name}
-        onChange={(value) => {
-          setSelectedStatus(value);
+        onChange={async (value) => {
           if (value) {
             setStatusError("");
+            try {
+              await updateStatus({
+                id: taskId,
+                status_id: parseInt(value, 10),
+              });
+            } catch (error) {
+              console.error("Error updating status:", error);
+              setStatusError("Failed to update status. Please try again.");
+            }
           }
         }}
       />

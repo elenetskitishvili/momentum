@@ -2,13 +2,13 @@ import AddTaskForm from "@/components/AddTaskForm";
 import {
   fetchDepartments,
   fetchrPriorities,
-  fetchrStatuses,
+  fetchStatuses,
 } from "@/lib/data-service";
 
 export default async function AddTask() {
   const departments = await fetchDepartments();
   const priorities = await fetchrPriorities();
-  const statuses = await fetchrStatuses();
+  const statuses = await fetchStatuses();
 
   return (
     <section className="max-w-[1920px] mx-auto h-[1000px] mt-[140px]">
