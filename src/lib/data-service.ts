@@ -4,8 +4,7 @@ export const fetchEmployees = async function (): Promise<Employee[]> {
   const token = process.env.NEXT_PUBLIC_API_TOKEN;
 
   if (!token) {
-    console.error("API token is missing");
-    return [];
+    throw new Error("API token is missing");
   }
 
   try {
@@ -90,8 +89,7 @@ export const fetchTasks = async function (): Promise<Task[]> {
   const token = process.env.NEXT_PUBLIC_API_TOKEN;
 
   if (!token) {
-    console.error("API token is missing");
-    return [];
+    throw new Error("API token is missing");
   }
 
   try {
@@ -115,5 +113,36 @@ export const fetchTasks = async function (): Promise<Task[]> {
   } catch (err) {
     console.error("Error fetching tasks:", (err as Error).message);
     return [];
+  }
+};
+
+export const fetchTask = async function (id: string): Promise<Task | null> {
+  const token = process.env.NEXT_PUBLIC_API_TOKEN;
+
+  if (!token) {
+    throw new Error("API token is missing");
+  }
+
+  try {
+    const res = await fetch(
+      `https://momentum.redberryinternship.ge/api/tasks/${id}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch task");
+    }
+
+    const task: Task = await res.json();
+
+    return task;
+  } catch (err) {
+    console.error("Error fetching tasks:", (err as Error).message);
+    return null;
   }
 };

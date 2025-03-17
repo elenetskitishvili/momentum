@@ -30,6 +30,9 @@ body {
   --color-custom-blue: #3a86ff;
   --color-custom-blue-light: #89b6ff;
   --color-custom-purple-light: #c792ea;
+
+  --color-custom-dark: #2a2a2a;
+  --color-custom-dark-light: #474747;
 }
 
 @layer utilities {
