@@ -10,14 +10,6 @@ interface EmployeeData {
   image: File;
 }
 
-// interface AddEmployeeResponse {
-//   id: number;
-//   firstName: string;
-//   lastName: string;
-//   department: string;
-//   imageUrl: string;
-// }
-
 export async function addEmployee(
   employeeData: EmployeeData
 ): Promise<Employee> {
