@@ -18,7 +18,7 @@ export default async function TaskDetailsPage({
   return (
     <div className="grid grid-cols-2 gap-x-[223px]">
       <TaskDetails task={task} />
-      <CommentsSection />
+      <CommentsSection taskId={taskId} />
     </div>
   );
 }

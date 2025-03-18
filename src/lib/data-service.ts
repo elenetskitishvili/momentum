@@ -1,4 +1,11 @@
-import { Department, Employee, Priority, Status, Task } from "@/types/types";
+import {
+  Comment,
+  Department,
+  Employee,
+  Priority,
+  Status,
+  Task,
+} from "@/types/types";
 
 export const fetchEmployees = async function (): Promise<Employee[]> {
   const token = process.env.NEXT_PUBLIC_API_TOKEN;
@@ -144,5 +151,36 @@ export const fetchTask = async function (id: string): Promise<Task | null> {
   } catch (err) {
     console.error("Error fetching tasks:", (err as Error).message);
     return null;
+  }
+};
+
+export const fetchComments = async function (id: string): Promise<Comment[]> {
+  const token = process.env.NEXT_PUBLIC_API_TOKEN;
+
+  if (!token) {
+    throw new Error("API token is missing");
+  }
+
+  try {
+    const res = await fetch(
+      `https://momentum.redberryinternship.ge/api/tasks/${id}/comments`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch comments");
+    }
+
+    const comments: Comment[] = await res.json();
+
+    return comments;
+  } catch (err) {
+    console.error("Error fetching comments:", (err as Error).message);
+    return [];
   }
 };

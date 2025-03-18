@@ -3,8 +3,9 @@ import { useState } from "react";
 import Image from "next/image";
 import Reply from "./Reply";
 import ReplyForm from "./ReplyForm";
+import type { Comment } from "@/types/types";
 
-export default function Comment() {
+export default function Comment({ comment }: { comment: Comment }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
 
   const handleReplyClick = () => {
@@ -15,19 +16,18 @@ export default function Comment() {
     <div className="flex flex-col gap-3 max-w-[598px]">
       <div className="flex items-start gap-3">
         <Image
-          src={"/icons/user-icon.svg"}
-          alt=""
+          src={comment.author_avatar}
+          alt={comment.author_nickname}
           width={38}
           height={38}
           className="object-cover rounded-full"
         />
         <div>
           <p className="text-lg font-medium text-primary-text mb-2">
-            ემილია მორგანი
+            {comment.author_nickname}
           </p>
           <p className="text-light-text font-[350] text-base leading-[100%] mb-2.5">
-            დიზაინი სუფთად ჩანს, მაგრამ კოდირებისას მნიშვნელოვანი იქნება, რომ
-            ელემენტებს ჰქონდეს შესაბამისი რეზოლუცია.
+            {comment.text}
           </p>
           <Reply onReplyClick={handleReplyClick} />
         </div>
@@ -42,7 +42,7 @@ export default function Comment() {
       </div>
 
       {/* Replies */}
-      <div className="ml-10 flex items-start gap-3 mb-2.5">
+      {/* <div className="ml-10 flex items-start gap-3 mb-2.5">
         <Image
           src={"/icons/user-icon.svg"}
           alt=""
@@ -58,7 +58,7 @@ export default function Comment() {
             დიზაინი სუფთად ჩანს, მაგრამ კოდირებისას მნიშვნელოვანი იქნება.
           </p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
