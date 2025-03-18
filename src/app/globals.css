@@ -15,6 +15,7 @@ body {
 
   --color-border-grey: #dee2e6;
   --color-border-grey-darker: #ced4da;
+  --color-border-grey-darkest: #adb5bd;
   --color-grey-hover: #f8f9fa;
 
   --color-custom-green: #08a508;
@@ -31,6 +32,8 @@ body {
   --color-custom-blue-light: #89b6ff;
   --color-custom-purple-light: #c792ea;
 
+  --color-purple-bg: #f8f3fea6;
+  --color-purple-border: #ddd2ff;
   --color-custom-dark: #2a2a2a;
   --color-custom-dark-light: #474747;
 }

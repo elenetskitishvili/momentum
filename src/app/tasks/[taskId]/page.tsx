@@ -1,3 +1,4 @@
+import CommentsSection from "@/components/CommentsSection";
 import TaskDetails from "@/components/TaskDetails";
 import { fetchTask } from "@/lib/data-service";
 import { Task } from "@/types/types";
@@ -17,7 +18,7 @@ export default async function TaskDetailsPage({
   return (
     <div className="grid grid-cols-2 gap-x-[223px]">
       <TaskDetails task={task} />
-      <section className="bg-amber-500 h-96 mt-[100px]"></section>
+      <CommentsSection />
     </div>
   );
 }
