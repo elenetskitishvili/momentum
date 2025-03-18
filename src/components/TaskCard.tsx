@@ -49,7 +49,7 @@ export default function TaskCard({ task, borderClass }: TaskCardProps) {
           />
           <div className="flex items-center gap-1">
             <Image
-              src={"icons/message-icon.svg"}
+              src={"/icons/message-icon.svg"}
               alt="message icon"
               width={22}
               height={22}

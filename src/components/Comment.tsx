@@ -1,11 +1,17 @@
 "use client";
-import { useState } from "react";
-import Image from "next/image";
-import Reply from "./Reply";
-import ReplyForm from "./ReplyForm";
 import type { Comment } from "@/types/types";
+import Image from "next/image";
+import { useState } from "react";
+import CommentForm from "./CommentForm";
+import Reply from "./Reply";
 
-export default function Comment({ comment }: { comment: Comment }) {
+export default function Comment({
+  comment,
+  taskId,
+}: {
+  comment: Comment;
+  taskId: string;
+}) {
   const [showReplyForm, setShowReplyForm] = useState(false);
 
   const handleReplyClick = () => {
@@ -38,7 +44,13 @@ export default function Comment({ comment }: { comment: Comment }) {
           showReplyForm ? "max-h-[200px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <ReplyForm />
+        <CommentForm
+          taskId={Number(taskId)}
+          parentId={comment.id}
+          placeholder="დაწერე პასუხი"
+          className="ml-10"
+          buttonText="უპასუხე"
+        />
       </div>
 
       {/* Replies */}
