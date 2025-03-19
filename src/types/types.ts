@@ -3,10 +3,7 @@ export interface Employee {
   name: string;
   surname: string;
   avatar: string;
-  department: {
-    id: number;
-    name: string;
-  };
+  department: Department; // ✅ Reused Department interface
 }
 
 export interface Department {
@@ -25,33 +22,6 @@ export interface Status {
   name: string;
 }
 
-export interface Task {
-  id: number;
-  name: string;
-  description: string;
-  due_date: string;
-  status: {
-    id: number;
-    name: string;
-  };
-  priority: {
-    id: number;
-    name: string;
-    icon: string;
-  };
-  department: {
-    id: number;
-    name: string;
-  };
-  employee: {
-    id: number;
-    name: string;
-    surname: string;
-    avatar: string;
-    department_id: number;
-  };
-}
-
 export interface Comment {
   id: number;
   text: string;
@@ -60,4 +30,16 @@ export interface Comment {
   author_avatar: string;
   author_nickname: string;
   sub_comments?: Comment[];
+}
+
+export interface Task {
+  id: number;
+  name: string;
+  description: string;
+  due_date: string;
+  department: Department;
+  employee: Employee;
+  status: Status;
+  priority: Priority;
+  total_comments: number;
 }

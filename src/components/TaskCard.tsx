@@ -34,7 +34,7 @@ export default function TaskCard({ task, borderClass }: TaskCardProps) {
           <h4 className="text-[15px] font-medium text-primary-text leading-[100%]">
             {task.name}
           </h4>
-          <p className="text-sm font-normal leaidng-[100%] text-light-text">
+          <p className="text-sm font-normal text-light-text line-clamp-2">
             {task.description}
           </p>
         </div>
@@ -54,7 +54,9 @@ export default function TaskCard({ task, borderClass }: TaskCardProps) {
               width={22}
               height={22}
             />
-            <span className="text-primary-text text-sm font-normal">8</span>
+            <span className="text-primary-text text-sm font-normal">
+              {task.total_comments}
+            </span>
           </div>
         </div>
       </Link>
