@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
-import ArrowIcon from "./ArrowIcon";
+import { useState, useEffect } from "react";
 import FilteringModal from "./FilteringModal";
+import FilterButtons from "./FilterButtons";
+import SelectedFilters from "./SelectedFilters";
 import { Department, Priority, Employee } from "@/types/types";
 
 type FilterType = "department" | "priority" | "employee";
@@ -12,7 +13,7 @@ interface FiltersProps {
   employees: Employee[];
   setSelectedDepartments: (departments: string[]) => void;
   setSelectedPriorities: (priorities: string[]) => void;
-  setSelectedEmployee: (employee: string | null) => void;
+  setSelectedEmployee: (employee: Employee | null) => void;
 }
 
 export default function Filters({
@@ -24,6 +25,54 @@ export default function Filters({
   setSelectedEmployee,
 }: FiltersProps) {
   const [openFilter, setOpenFilter] = useState<FilterType | null>(null);
+  const [selectedDepartments, setLocalDepartments] = useState<string[]>([]);
+  const [selectedPriorities, setLocalPriorities] = useState<string[]>([]);
+  const [selectedEmployee, setLocalEmployee] = useState<Employee | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const storedDepartments = localStorage.getItem("selectedDepartments");
+    const storedPriorities = localStorage.getItem("selectedPriorities");
+    const storedEmployee = localStorage.getItem("selectedEmployee");
+
+    if (storedDepartments) {
+      const parsedDepartments = JSON.parse(storedDepartments);
+      setLocalDepartments(parsedDepartments);
+      setSelectedDepartments(parsedDepartments);
+    }
+    if (storedPriorities) {
+      const parsedPriorities = JSON.parse(storedPriorities);
+      setLocalPriorities(parsedPriorities);
+      setSelectedPriorities(parsedPriorities);
+    }
+    if (storedEmployee) {
+      const parsedEmployee: Employee = JSON.parse(storedEmployee);
+      setLocalEmployee(parsedEmployee);
+      setSelectedEmployee(parsedEmployee);
+    }
+
+    setLoading(false);
+  }, [setSelectedDepartments, setSelectedPriorities, setSelectedEmployee]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "selectedDepartments",
+      JSON.stringify(selectedDepartments)
+    );
+    localStorage.setItem(
+      "selectedPriorities",
+      JSON.stringify(selectedPriorities)
+    );
+
+    if (selectedEmployee) {
+      localStorage.setItem(
+        "selectedEmployee",
+        JSON.stringify(selectedEmployee)
+      );
+    } else {
+      localStorage.removeItem("selectedEmployee");
+    }
+  }, [selectedDepartments, selectedPriorities, selectedEmployee]);
 
   const toggleFilter = (filter: FilterType) => {
     setOpenFilter((prev) => (prev === filter ? null : filter));
@@ -44,50 +93,76 @@ export default function Filters({
 
   const handleFilterChange = (selectedValues: string[]) => {
     if (openFilter === "department") {
+      setLocalDepartments(selectedValues);
       setSelectedDepartments(selectedValues);
     } else if (openFilter === "priority") {
+      setLocalPriorities(selectedValues);
       setSelectedPriorities(selectedValues);
     } else if (openFilter === "employee") {
-      setSelectedEmployee(selectedValues.length > 0 ? selectedValues[0] : null);
+      const selected =
+        selectedValues.length > 0
+          ? employees.find((emp) => emp.id.toString() === selectedValues[0])
+          : null;
+      setLocalEmployee(selected || null);
+      setSelectedEmployee(selected || null);
     }
   };
 
+  const removeFilter = (type: FilterType, value: string) => {
+    if (type === "department") {
+      const updatedDepartments = selectedDepartments.filter((d) => d !== value);
+      setLocalDepartments(updatedDepartments);
+      setSelectedDepartments(updatedDepartments);
+    } else if (type === "priority") {
+      const updatedPriorities = selectedPriorities.filter((p) => p !== value);
+      setLocalPriorities(updatedPriorities);
+      setSelectedPriorities(updatedPriorities);
+    } else if (type === "employee") {
+      setLocalEmployee(null);
+      setSelectedEmployee(null);
+    }
+  };
+
+  const clearAllFilters = () => {
+    setLocalDepartments([]);
+    setLocalPriorities([]);
+    setLocalEmployee(null);
+    setSelectedDepartments([]);
+    setSelectedPriorities([]);
+    setSelectedEmployee(null);
+    localStorage.removeItem("selectedDepartments");
+    localStorage.removeItem("selectedPriorities");
+    localStorage.removeItem("selectedEmployee");
+  };
+
   return (
-    <div className="relative inline-flex items-center gap-[45px] border border-border-grey rounded-[10px] w-auto mt-[52px] mb-[79px]">
-      <button
-        type="button"
-        onClick={() => toggleFilter("department")}
-        className="h-[44px] w-[199px] flex items-center gap-2 cursor-pointer text-dark-text hover:text-primary transition-colors duration-200 ease-in-out"
-      >
-        <span className="text-base font-normal pl-[18px]">დეპარტამენტი</span>
-        <ArrowIcon />
-      </button>
+    <div className="relative w-auto mt-[52px] mb-[24px]">
+      {loading ? (
+        <div className="flex justify-center items-center h-[100px]">
+          <span className="animate-spin h-6 w-6 border-4 border-primary border-t-transparent rounded-full"></span>
+          <p className="mt-2 text-gray-500">Loading filters...</p>
+        </div>
+      ) : (
+        <>
+          <FilterButtons toggleFilter={toggleFilter} openFilter={openFilter} />
 
-      <button
-        type="button"
-        onClick={() => toggleFilter("priority")}
-        className="h-[44px] w-[199px] flex items-center gap-2 cursor-pointer text-dark-text hover:text-primary transition-colors duration-200 ease-in-out"
-      >
-        <span className="text-base font-normal pl-[18px]">პრიორიტეტი</span>
-        <ArrowIcon />
-      </button>
+          <SelectedFilters
+            selectedDepartments={selectedDepartments}
+            selectedPriorities={selectedPriorities}
+            selectedEmployee={selectedEmployee}
+            removeFilter={removeFilter}
+            clearAllFilters={clearAllFilters}
+          />
 
-      <button
-        type="button"
-        onClick={() => toggleFilter("employee")}
-        className="h-[44px] w-[199px] flex items-center gap-2 cursor-pointer text-dark-text hover:text-primary transition-colors duration-200 ease-in-out"
-      >
-        <span className="text-base font-normal pl-[18px]">თანამშრომელი</span>
-        <ArrowIcon />
-      </button>
-
-      {openFilter && (
-        <FilteringModal
-          filterType={openFilter}
-          data={getFilterData()}
-          onClose={() => setOpenFilter(null)}
-          onFilterChange={handleFilterChange}
-        />
+          {openFilter && (
+            <FilteringModal
+              filterType={openFilter}
+              data={getFilterData()}
+              onClose={() => setOpenFilter(null)}
+              onFilterChange={handleFilterChange}
+            />
+          )}
+        </>
       )}
     </div>
   );

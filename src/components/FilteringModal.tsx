@@ -24,19 +24,6 @@ export default function FilteringModal({
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
-        onClose();
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose]);
-
-  useEffect(() => {
     if (filterType) {
       setIsMounted(true);
     } else {
@@ -78,7 +65,7 @@ export default function FilteringModal({
   return (
     <div
       ref={modalRef}
-      className={`absolute top-14 -left-[1px] w-full bg-white pt-10 px-[30px] pb-5 rounded-[10px] border-[0.5px] border-primary transition-opacity duration-300 ${
+      className={`absolute top-14 -left-[1px] w-[688px] bg-white pt-10 px-[30px] pb-5 rounded-[10px] border-[0.5px] border-primary transition-opacity duration-300 ${
         filterType ? "opacity-100" : "opacity-0"
       }`}
     >
