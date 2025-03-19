@@ -10,12 +10,18 @@ interface FiltersProps {
   departments: Department[];
   priorities: Priority[];
   employees: Employee[];
+  setSelectedDepartments: (departments: string[]) => void;
+  setSelectedPriorities: (priorities: string[]) => void;
+  setSelectedEmployee: (employee: string | null) => void;
 }
 
 export default function Filters({
   departments,
   priorities,
   employees,
+  setSelectedDepartments,
+  setSelectedPriorities,
+  setSelectedEmployee,
 }: FiltersProps) {
   const [openFilter, setOpenFilter] = useState<FilterType | null>(null);
 
@@ -36,7 +42,15 @@ export default function Filters({
     }
   };
 
-  const filterData = getFilterData();
+  const handleFilterChange = (selectedValues: string[]) => {
+    if (openFilter === "department") {
+      setSelectedDepartments(selectedValues);
+    } else if (openFilter === "priority") {
+      setSelectedPriorities(selectedValues);
+    } else if (openFilter === "employee") {
+      setSelectedEmployee(selectedValues.length > 0 ? selectedValues[0] : null);
+    }
+  };
 
   return (
     <div className="relative inline-flex items-center gap-[45px] border border-border-grey rounded-[10px] w-auto mt-[52px] mb-[79px]">
@@ -70,8 +84,9 @@ export default function Filters({
       {openFilter && (
         <FilteringModal
           filterType={openFilter}
-          data={filterData}
+          data={getFilterData()}
           onClose={() => setOpenFilter(null)}
+          onFilterChange={handleFilterChange}
         />
       )}
     </div>

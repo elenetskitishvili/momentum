@@ -8,7 +8,7 @@ interface CustomCheckboxProps {
   item: Department | Employee | Priority;
   filterType: FilterType;
   checked: boolean;
-  onChange: (checked: boolean) => void;
+  onChange: (isChecked: boolean) => void;
 }
 
 export default function CustomCheckbox({
@@ -20,7 +20,7 @@ export default function CustomCheckbox({
   return (
     <label className="flex items-center gap-[15px] cursor-pointer select-none">
       <input
-        type="checkbox"
+        type={filterType === "employee" ? "radio" : "checkbox"}
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
         className="hidden"
@@ -44,6 +44,7 @@ export default function CustomCheckbox({
           </svg>
         )}
       </div>
+
       <div className="flex items-center gap-2">
         {filterType === "employee" ? (
           <div className="flex items-center gap-2">
@@ -58,17 +59,11 @@ export default function CustomCheckbox({
               {(item as Employee).name} {(item as Employee).surname}
             </span>
           </div>
-        ) : filterType === "department" ? (
+        ) : (
           <span className="text-primary-text text-base font-normal leading-[100%]">
-            {(item as Department).name}
+            {"name" in item ? item.name : ""}
           </span>
-        ) : filterType === "priority" ? (
-          <>
-            <span className="text-primary-text text-base font-normal leading-[100%]">
-              {(item as Priority).name}
-            </span>
-          </>
-        ) : null}
+        )}
       </div>
     </label>
   );
