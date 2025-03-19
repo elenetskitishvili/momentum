@@ -2,13 +2,41 @@
 import { useState } from "react";
 import ArrowIcon from "./ArrowIcon";
 import FilteringModal from "./FilteringModal";
+import { Department, Priority, Employee } from "@/types/types";
 
-export default function Filters() {
-  const [openFilter, setOpenFilter] = useState<string | null>(null);
+type FilterType = "department" | "priority" | "employee";
 
-  const toggleFilter = (filter: string) => {
+interface FiltersProps {
+  departments: Department[];
+  priorities: Priority[];
+  employees: Employee[];
+}
+
+export default function Filters({
+  departments,
+  priorities,
+  employees,
+}: FiltersProps) {
+  const [openFilter, setOpenFilter] = useState<FilterType | null>(null);
+
+  const toggleFilter = (filter: FilterType) => {
     setOpenFilter((prev) => (prev === filter ? null : filter));
   };
+
+  const getFilterData = () => {
+    switch (openFilter) {
+      case "department":
+        return departments;
+      case "priority":
+        return priorities;
+      case "employee":
+        return employees;
+      default:
+        return [];
+    }
+  };
+
+  const filterData = getFilterData();
 
   return (
     <div className="relative inline-flex items-center gap-[45px] border border-border-grey rounded-[10px] w-auto mt-[52px] mb-[79px]">
@@ -39,10 +67,13 @@ export default function Filters() {
         <ArrowIcon />
       </button>
 
-      <FilteringModal
-        filterType={openFilter}
-        onClose={() => setOpenFilter(null)}
-      />
+      {openFilter && (
+        <FilteringModal
+          filterType={openFilter}
+          data={filterData}
+          onClose={() => setOpenFilter(null)}
+        />
+      )}
     </div>
   );
 }

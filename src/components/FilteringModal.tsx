@@ -1,17 +1,22 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import CustomCheckbox from "./CustomCheckbox";
+import { Department, Employee, Priority } from "@/types/types";
+
+type FilterType = "department" | "employee" | "priority";
 
 interface FilteringModalProps {
-  filterType: string | null;
+  filterType: FilterType | null;
   onClose: () => void;
+  data: Array<Department | Employee | Priority>;
 }
 
 export default function FilteringModal({
   filterType,
   onClose,
+  data,
 }: FilteringModalProps) {
-  const [checkedItems, setCheckedItems] = useState<string[]>([]);
+  const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -41,46 +46,27 @@ export default function FilteringModal({
 
   if (!isMounted) return null;
 
-  let options: string[] = [];
-  switch (filterType) {
-    case "department":
-      options = [
-        "მარკეტინგის დეპარტამენტი",
-        "დიზაინის დეპარტამენტი",
-        "ლოგისტიკის დეპარტამენტი",
-        "IT დეპარტამენტი",
-      ];
-      break;
-    case "priority":
-      options = ["High Priority", "Medium Priority", "Low Priority"];
-      break;
-    case "employee":
-      options = ["Employee A", "Employee B", "Employee C"];
-      break;
-    default:
-      options = [];
-  }
-
-  const handleChange = (option: string, isChecked: boolean) => {
+  const handleChange = (id: number, isChecked: boolean) => {
     setCheckedItems((prev) =>
-      isChecked ? [...prev, option] : prev.filter((item) => item !== option)
+      isChecked ? [...prev, id] : prev.filter((item) => item !== id)
     );
   };
 
   return (
     <div
       ref={modalRef}
-      className={`absolute top-12 -left-[1px] w-full bg-white pt-10 px-[30px] pb-5 rounded-[10px] border-[0.5px] border-primary transition-opacity duration-300 ${
+      className={`absolute top-14 -left-[1px] w-full bg-white pt-10 px-[30px] pb-5 rounded-[10px] border-[0.5px] border-primary transition-opacity duration-300 ${
         filterType ? "opacity-100" : "opacity-0"
       }`}
     >
       <div className="mb-[25px] flex flex-col gap-[22px]">
-        {options.map((option) => (
-          <div key={option}>
+        {data.map((item) => (
+          <div key={item.id}>
             <CustomCheckbox
-              label={option}
-              checked={checkedItems.includes(option)}
-              onChange={(checked) => handleChange(option, checked)}
+              item={item}
+              filterType={filterType!}
+              checked={checkedItems.includes(item.id)}
+              onChange={(checked) => handleChange(item.id, checked)}
             />
           </div>
         ))}

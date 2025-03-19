@@ -1,13 +1,19 @@
+import { Department, Employee, Priority } from "@/types/types";
+import Image from "next/image";
 import React from "react";
 
+type FilterType = "department" | "employee" | "priority";
+
 interface CustomCheckboxProps {
-  label: string;
+  item: Department | Employee | Priority;
+  filterType: FilterType;
   checked: boolean;
   onChange: (checked: boolean) => void;
 }
 
 export default function CustomCheckbox({
-  label,
+  item,
+  filterType,
   checked,
   onChange,
 }: CustomCheckboxProps) {
@@ -19,7 +25,6 @@ export default function CustomCheckbox({
         onChange={(e) => onChange(e.target.checked)}
         className="hidden"
       />
-
       <div className="w-[22px] h-[22px] border border-primary-text rounded-md flex items-center justify-center">
         {checked && (
           <svg
@@ -39,10 +44,32 @@ export default function CustomCheckbox({
           </svg>
         )}
       </div>
-
-      <span className="text-primary-text text-base font-normal leading-[100%]">
-        {label}
-      </span>
+      <div className="flex items-center gap-2">
+        {filterType === "employee" ? (
+          <div className="flex items-center gap-2">
+            <Image
+              src={(item as Employee).avatar}
+              alt={`${(item as Employee).name} ${(item as Employee).surname}`}
+              className="rounded-full object-cover"
+              width={30}
+              height={30}
+            />
+            <span className="text-primary-text text-base font-normal leading-[100%]">
+              {(item as Employee).name} {(item as Employee).surname}
+            </span>
+          </div>
+        ) : filterType === "department" ? (
+          <span className="text-primary-text text-base font-normal leading-[100%]">
+            {(item as Department).name}
+          </span>
+        ) : filterType === "priority" ? (
+          <>
+            <span className="text-primary-text text-base font-normal leading-[100%]">
+              {(item as Priority).name}
+            </span>
+          </>
+        ) : null}
+      </div>
     </label>
   );
 }
