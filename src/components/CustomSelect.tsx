@@ -18,6 +18,7 @@ interface CustomSelectProps {
   showAddEmployee?: boolean;
   onAddEmployee?: () => void;
   defaultValue?: string;
+  value?: string;
 }
 
 export default function CustomSelect({
@@ -28,11 +29,18 @@ export default function CustomSelect({
   showAddEmployee = false,
   onAddEmployee,
   defaultValue,
+  value,
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [borderOpen, setBorderOpen] = useState(false);
-  const [selected, setSelected] = useState<string | null>(defaultValue || null);
   const borderTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [internalValue, setInternalValue] = useState<string | null>(
+    defaultValue || null
+  );
+
+  const isControlled = value !== undefined;
+  const selectedValue = isControlled ? value : internalValue;
 
   useEffect(() => {
     return () => {
@@ -54,7 +62,11 @@ export default function CustomSelect({
 
   function handleSelect(value: string) {
     if (disabled) return;
-    setSelected(value);
+
+    if (!isControlled) {
+      setInternalValue(value);
+    }
+
     setIsOpen(false);
     borderTimeoutRef.current = setTimeout(() => {
       setBorderOpen(false);
@@ -62,8 +74,8 @@ export default function CustomSelect({
     }, 150);
   }
 
-  const selectedOption = selected
-    ? options.find((opt) => opt.value === selected)
+  const selectedOption = selectedValue
+    ? options.find((opt) => opt.value === selectedValue)
     : null;
 
   return (

@@ -6,6 +6,7 @@ import Image from "next/image";
 
 interface CustomDatePickerProps {
   onChange?: (date: string) => void;
+  value?: string;
 }
 
 const georgianMonths = [
@@ -67,23 +68,54 @@ function parseDateString(value: string): Date | null {
   return null;
 }
 
-export default function CustomDatePicker({ onChange }: CustomDatePickerProps) {
-  const defaultDate = new Date();
-  defaultDate.setDate(defaultDate.getDate() + 1);
+function isValidDate(d: Date) {
+  return d instanceof Date && !isNaN(d.getTime());
+}
 
+export default function CustomDatePicker({
+  onChange,
+  value,
+}: CustomDatePickerProps) {
   const minDate = new Date();
   minDate.setHours(0, 0, 0, 0);
 
-  const [selectedDate, setSelectedDate] = useState<Date>(defaultDate);
+  // State initialization
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+    if (value) {
+      const parsed = new Date(value);
+      return isValidDate(parsed)
+        ? parsed
+        : new Date(minDate.getTime() + 86400000);
+    }
+    return new Date(minDate.getTime() + 86400000); // Default to tomorrow
+  });
+
   const [currentMonth, setCurrentMonth] = useState<number>(
-    defaultDate.getMonth()
+    selectedDate.getMonth()
   );
   const [currentYear, setCurrentYear] = useState<number>(
-    defaultDate.getFullYear()
+    selectedDate.getFullYear()
   );
-  const [inputValue, setInputValue] = useState<string>(formatDate(defaultDate));
+  const [inputValue, setInputValue] = useState<string>(() => {
+    return value && isValidDate(new Date(value))
+      ? formatDate(new Date(value))
+      : formatDate(selectedDate);
+  });
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isValid, setIsValid] = useState<boolean>(true);
+
+  // Sync with external value changes
+  useEffect(() => {
+    if (value) {
+      const parsed = new Date(value);
+      if (isValidDate(parsed)) {
+        setSelectedDate(parsed);
+        setCurrentMonth(parsed.getMonth());
+        setCurrentYear(parsed.getFullYear());
+        setInputValue(formatDate(parsed));
+      }
+    }
+  }, [value]);
 
   useEffect(() => {
     if (onChange) {
@@ -105,13 +137,18 @@ export default function CustomDatePicker({ onChange }: CustomDatePickerProps) {
   const handleInputBlur = () => {
     const parsed = parseDateString(inputValue);
     if (parsed && parsed.getTime() >= minDate.getTime()) {
-      setSelectedDate(parsed);
-      setCurrentMonth(parsed.getMonth());
-      setCurrentYear(parsed.getFullYear());
+      if (!value) {
+        // Only update internal state if uncontrolled
+        setSelectedDate(parsed);
+        setCurrentMonth(parsed.getMonth());
+        setCurrentYear(parsed.getFullYear());
+      }
       setInputValue(formatDate(parsed));
       setIsValid(true);
     } else {
-      setInputValue(formatDate(selectedDate));
+      setInputValue(
+        value ? formatDate(new Date(value)) : formatDate(selectedDate)
+      );
       setIsValid(true);
     }
   };
@@ -190,6 +227,18 @@ export default function CustomDatePicker({ onChange }: CustomDatePickerProps) {
       currentYear === selectedDate.getFullYear()
     );
   }
+
+  const handleDateSelection = (dayNum: number) => {
+    const newDate = new Date(currentYear, currentMonth, dayNum);
+    if (!value) {
+      // Only update internal state if uncontrolled
+      setSelectedDate(newDate);
+    }
+    setInputValue(formatDate(newDate));
+    if (onChange) {
+      onChange(formatAPIDate(newDate));
+    }
+  };
 
   return (
     <div className="relative inline-block w-[318px]">
@@ -294,12 +343,7 @@ export default function CustomDatePicker({ onChange }: CustomDatePickerProps) {
                               key={colIndex}
                               onClick={() => {
                                 if (selectable) {
-                                  const newDate = new Date(
-                                    currentYear,
-                                    currentMonth,
-                                    dayNum
-                                  );
-                                  setSelectedDate(newDate);
+                                  handleDateSelection(dayNum);
                                 }
                               }}
                               className={`p-1 text-sm rounded cursor-pointer hover:bg-gray-100  

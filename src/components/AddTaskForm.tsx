@@ -1,7 +1,8 @@
 "use client";
 import ValidatedTextField from "@/components/ValidatedTextField";
 import useDebouncedValue from "@/hooks/useDebouncedValue";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import CustomSelect from "./CustomSelect";
 import CustomDatePicker from "./CustomDatePicker";
 import useFilteredEmployees from "@/hooks/useFilteredEmployees";
@@ -19,6 +20,10 @@ export default function AddTaskForm({
   priorities,
   statuses,
 }: AddTaskFormProps) {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
   const [title, setTitle] = useState("");
   const [titleTouched, setTitleTouched] = useState(false);
   const [titleError, setTitleError] = useState("");
@@ -68,6 +73,21 @@ export default function AddTaskForm({
   const [dueDate, setDueDate] = useState("");
   const [dueDateError, setDueDateError] = useState("");
 
+  useEffect(() => {
+    const loadFormData = () => {
+      setTitle(localStorage.getItem("addTaskTitle") || "");
+      setDescription(localStorage.getItem("addTaskDescription") || "");
+      setDepartment(localStorage.getItem("addTaskDepartment") || "");
+      setPriority(localStorage.getItem("addTaskPriority") || "2");
+      setStatus(localStorage.getItem("addTaskStatus") || "1");
+      setEmployee(localStorage.getItem("addTaskEmployee") || "");
+      setDueDate(localStorage.getItem("addTaskDueDate") || "");
+      setIsLoaded(true);
+    };
+
+    loadFormData();
+  }, []);
+
   const validateTitle = (val: string) => {
     if (val.trim() === "") {
       setTitleError("სავალდებულოა");
@@ -84,22 +104,26 @@ export default function AddTaskForm({
     }
     const newVal = e.target.value;
     setTitle(newVal);
+    localStorage.setItem("addTaskTitle", newVal);
     validateTitle(newVal);
   };
 
   const handleDepartmentChange = (value: string) => {
     setDepartment(value);
+    localStorage.setItem("addTaskDepartment", value);
     if (value.trim() === "") {
       setDepartmentError("სავალდებულოა");
     } else {
       setDepartmentError("");
     }
     setEmployee("");
+    localStorage.setItem("addTaskEmployee", "");
     setEmployeeError("სავალდებულოა");
   };
 
   const handleEmployeeChange = (value: string) => {
     setEmployee(value);
+    localStorage.setItem("addTaskEmployee", value);
     if (value.trim() === "") {
       setEmployeeError("სავალდებულოა");
     } else {
@@ -109,6 +133,7 @@ export default function AddTaskForm({
 
   const handlePriorityChange = (value: string) => {
     setPriority(value);
+    localStorage.setItem("addTaskPriority", value);
     if (value.trim() === "") {
       setPriorityError("სავალდებულოა");
     } else {
@@ -118,6 +143,7 @@ export default function AddTaskForm({
 
   const handleStatusChange = (value: string) => {
     setStatus(value);
+    localStorage.setItem("addTaskStatus", value);
     if (value.trim() === "") {
       setStatusError("სავალდებულოა");
     } else {
@@ -127,6 +153,7 @@ export default function AddTaskForm({
 
   const handleDueDateChange = (date: string) => {
     setDueDate(date);
+    localStorage.setItem("addTaskDueDate", date);
     if (date.trim() === "") {
       setDueDateError("სავალდებულოა");
     } else {
@@ -170,13 +197,34 @@ export default function AddTaskForm({
       priority_id: Number(priority),
     };
 
+    setIsSubmitting(true);
     try {
       const response = await addTask(taskData);
       console.log("Task added successfully:", response);
+
+      localStorage.removeItem("addTaskTitle");
+      localStorage.removeItem("addTaskDescription");
+      localStorage.removeItem("addTaskDepartment");
+      localStorage.removeItem("addTaskPriority");
+      localStorage.removeItem("addTaskStatus");
+      localStorage.removeItem("addTaskEmployee");
+      localStorage.removeItem("addTaskDueDate");
+
+      router.push("/");
     } catch (error) {
       console.error("Error adding task:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  if (!isLoaded) {
+    return (
+      <div className="w-full h-[50vh] flex items-center justify-center">
+        loading...
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="max-w-[1370px]">
@@ -214,6 +262,7 @@ export default function AddTaskForm({
           </div>
           <CustomSelect
             options={departmentOptions}
+            value={department}
             onChange={handleDepartmentChange}
           />
         </div>
@@ -235,6 +284,7 @@ export default function AddTaskForm({
                 setDescriptionTouched(true);
               }
               setDescription(e.target.value);
+              localStorage.setItem("addTaskDescription", e.target.value);
             }}
             showCheckIcon={false}
             multiline={true}
@@ -259,6 +309,7 @@ export default function AddTaskForm({
           </div>
           <CustomSelect
             options={employeeOptions}
+            value={employee}
             onChange={handleEmployeeChange}
             disabled={isEmployeeSelectDisabled}
             showAddEmployee={true}
@@ -276,8 +327,8 @@ export default function AddTaskForm({
           </div>
           <CustomSelect
             options={priorityOptions}
+            value={priority}
             onChange={handlePriorityChange}
-            defaultValue="2"
           />
         </div>
 
@@ -292,8 +343,8 @@ export default function AddTaskForm({
           </div>
           <CustomSelect
             options={statusOptions}
+            value={status}
             onChange={handleStatusChange}
-            defaultValue="1"
           />
         </div>
 
@@ -303,15 +354,16 @@ export default function AddTaskForm({
               <span className="text-custom-red text-xs">{dueDateError}</span>
             )}
           </div>
-          <CustomDatePicker onChange={handleDueDateChange} />
+          <CustomDatePicker value={dueDate} onChange={handleDueDateChange} />
         </div>
 
         <div className="col-start-7 row-start-7 mt-[30px] place-self-end">
           <button
             type="submit"
-            className="flex items-center gap-1 px-5 text-lg font-normal leading-[100%] bg-primary text-white rounded-[5px] cursor-pointer hover:bg-primary-light transition-colors duration-200 ease-in-out"
+            disabled={isSubmitting}
+            className="gap-1 w-[208px] h-[42px] flex items-center justify-center text-lg font-normal leading-[100%] bg-primary text-white rounded-[5px] cursor-pointer hover:bg-primary-light transition-colors duration-200 ease-in-out"
           >
-            <span className="py-[12px]">დავალების შექმნა</span>
+            {isSubmitting ? "დაელოდეთ..." : "დავალების შექმნა"}
           </button>
         </div>
       </div>
