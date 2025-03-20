@@ -1,6 +1,5 @@
 "use client";
-
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 
 interface ImageUploadProps {
@@ -31,7 +30,7 @@ export default function ImageUpload({ onChange }: ImageUploadProps) {
   return (
     <>
       {!preview ? (
-        <label className="w-full flex items-center justify-center border border-dashed border-border-grey-darker rounded-lg cursor-pointer pt-[45px] pb-5">
+        <label className="w-full h-[120px] flex items-center justify-center border border-dashed border-border-grey-darker rounded-lg cursor-pointer pt-[45px] pb-5">
           <div className="flex flex-col items-center">
             <Image
               src={"/icons/upload-image.svg"}

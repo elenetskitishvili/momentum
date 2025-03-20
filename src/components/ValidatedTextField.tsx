@@ -57,7 +57,7 @@ export default function ValidatedTextField({
           id={id}
           value={value}
           onChange={onChange}
-          className="py-3 pl-2.5 pr-7 text-sm leading-[100%] rounded-[5px] border border-border-grey-darker mb-1.5 w-full h-[133px] resize-none"
+          className="py-3 pl-2.5 pr-7 text-sm leading-[100%] rounded-[5px] border border-border-grey-darker mb-1.5 w-full h-[133px] resize-none focus:border-primary outline-none"
         />
       ) : (
         <input
@@ -65,9 +65,10 @@ export default function ValidatedTextField({
           type="text"
           value={value}
           onChange={onChange}
-          className="py-3 pl-2.5 pr-7 text-sm leading-[100%] rounded-[5px] border border-border-grey-darker mb-1.5 w-full"
+          className="py-3 pl-2.5 pr-7 text-sm leading-[100%] rounded-[5px] border border-border-grey-darker mb-1.5 w-full focus:border-primary outline-none"
         />
       )}
+
       <div className="flex items-center gap-0.5 text-[10px] leading-[100%] font-[350] mb-0.5">
         {showCheckIcon && (
           <CheckIcon color={getMinIconColor(debouncedValue, touched)} />
@@ -76,6 +77,7 @@ export default function ValidatedTextField({
           მინიმუმ 2 სიმბოლო
         </span>
       </div>
+
       <div className="flex items-center gap-0.5 text-[10px] leading-[100%] font-[350]">
         {showCheckIcon && (
           <CheckIcon color={getMaxIconColor(debouncedValue, touched)} />

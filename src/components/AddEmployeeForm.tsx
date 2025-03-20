@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import { z } from "zod";
 import { addEmployee } from "@/actions/addEmployee";
@@ -10,10 +11,11 @@ import useDebouncedValue from "@/hooks/useDebouncedValue";
 import useDepartments from "@/hooks/useDepartments";
 import { useRouter } from "next/navigation";
 
-const nameSchema = z
-  .string()
-  .min(2, { message: "მინიმუმ 2 სიმბოლო" })
-  .max(255, { message: "მაქსიმუმ 255 სიმბოლო" });
+const MAX_FILE_SIZE = 600 * 1024;
+
+const nameSchema = z.string().min(2).max(255);
+
+const validCharactersRegex = /^[ა-ჰa-zA-Z]*$/;
 
 interface AddEmployeeFormProps {
   onClose: () => void;
@@ -23,48 +25,62 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
   const [firstName, setFirstName] = useState("");
   const [firstNameTouched, setFirstNameTouched] = useState(false);
   const debouncedFirstName = useDebouncedValue(firstName, 300);
+  const [firstNameError, setFirstNameError] = useState("");
 
   const [lastName, setLastName] = useState("");
   const [lastNameTouched, setLastNameTouched] = useState(false);
   const debouncedLastName = useDebouncedValue(lastName, 300);
+  const [lastNameError, setLastNameError] = useState("");
 
   const [image, setImage] = useState<File | null>(null);
   const [imageError, setImageError] = useState("");
 
   const [department, setDepartment] = useState("");
   const [departmentError, setDepartmentError] = useState("");
-  const { departments: departmentOptions } = useDepartments();
 
+  const { departments: departmentOptions } = useDepartments();
   const router = useRouter();
+
+  const validateName = (name: string) => {
+    if (!name) return "აუცილებელი ველი";
+    if (!validCharactersRegex.test(name))
+      return "მხოლოდ ქართული და ლათინური სიმბოლოები";
+    const result = nameSchema.safeParse(name);
+    return result.success ? "" : "";
+  };
+
+  const validateImage = (file: File | null) => {
+    if (!file) return "ფოტოს ატვირთვა აუცილებელია";
+    if (file.size > MAX_FILE_SIZE)
+      return "ფაილის ზომა არ უნდა აღემატებოდეს 600KB-ს";
+    return "";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const firstNameResult = nameSchema.safeParse(firstName);
-    const lastNameResult = nameSchema.safeParse(lastName);
-    let valid = true;
+    const firstNameValidation = validateName(firstName);
+    setFirstNameError(firstNameValidation);
 
-    if (!firstNameResult.success || !lastNameResult.success) {
-      valid = false;
-    }
+    const lastNameValidation = validateName(lastName);
+    setLastNameError(lastNameValidation);
 
-    if (!image) {
-      setImageError("ფოტოს ატვირთვა აუცილებელია");
-      valid = false;
-    } else {
-      setImageError("");
-    }
+    const imgError = validateImage(image);
+    setImageError(imgError);
 
     if (!department) {
       setDepartmentError("აუცილებელი ველი");
-      valid = false;
     } else {
       setDepartmentError("");
     }
 
-    if (!valid) {
+    if (
+      firstNameValidation ||
+      lastNameValidation ||
+      imgError ||
+      departmentError
+    )
       return;
-    }
 
     try {
       await addEmployee({
@@ -82,67 +98,80 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="grid grid-cols-2 gap-[45px] max-w-[813px]">
-        <ValidatedTextField
-          label="სახელი"
-          id="firstName"
-          value={firstName}
-          touched={firstNameTouched}
-          debouncedValue={debouncedFirstName}
-          onChange={(e) => {
-            if (!firstNameTouched && e.target.value !== "") {
+      <div className="grid grid-cols-2 gap-x-[45px] max-w-[813px]">
+        <div>
+          <ValidatedTextField
+            label="სახელი*"
+            id="firstName"
+            value={firstName}
+            touched={firstNameTouched}
+            debouncedValue={debouncedFirstName}
+            onChange={(e) => {
               setFirstNameTouched(true);
-            }
-            setFirstName(e.target.value);
-          }}
-        />
+              setFirstName(e.target.value);
+              setFirstNameError(validateName(e.target.value));
+            }}
+          />
+          <span className="inline-block text-custom-red text-[10px] mt-1 min-h-[14px]">
+            {firstNameError || ""}
+          </span>
+        </div>
 
-        <ValidatedTextField
-          label="გვარი"
-          id="lastName"
-          value={lastName}
-          touched={lastNameTouched}
-          debouncedValue={debouncedLastName}
-          onChange={(e) => {
-            if (!lastNameTouched && e.target.value !== "") {
+        <div>
+          <ValidatedTextField
+            label="გვარი*"
+            id="lastName"
+            value={lastName}
+            touched={lastNameTouched}
+            debouncedValue={debouncedLastName}
+            onChange={(e) => {
               setLastNameTouched(true);
-            }
-            setLastName(e.target.value);
-          }}
-        />
+              setLastName(e.target.value);
+              setLastNameError(validateName(e.target.value));
+            }}
+          />
+          <span className="inline-block text-custom-red text-[10px] mt-1 min-h-[14px]">
+            {lastNameError || ""}
+          </span>
+        </div>
 
-        <div className="col-span-2">
+        <div className="col-span-2 mt-[29px] mb-[30px]">
           <div className="flex items-center justify-between">
             <p className="text-sm text-light-text font-medium leading-[100%] mb-[8px]">
               ავატარი*
             </p>
-            {imageError && (
-              <span className="text-custom-red text-xs ml-2">{imageError}</span>
-            )}
           </div>
-          <ImageUpload onChange={setImage} />
+
+          <ImageUpload
+            onChange={(file) => {
+              setImage(file);
+              setImageError(validateImage(file));
+            }}
+          />
+
+          <span className="inline-block text-custom-red text-xs mt-1 min-h-[14px]">
+            {imageError || ""}
+          </span>
         </div>
 
-        <div>
+        <div className="col-span-2 w-[350px]">
           <div className="flex items-center justify-between">
             <label className="text-sm text-light-text font-medium leading-[100%] mb-[3px]">
               დეპარტამენტი*
             </label>
-            {departmentError && (
-              <span className="text-custom-red text-xs ml-2">
-                {departmentError}
-              </span>
-            )}
           </div>
+
           <CustomSelect
             options={departmentOptions}
             onChange={(value) => {
               setDepartment(value);
-              if (value) {
-                setDepartmentError("");
-              }
+              setDepartmentError(value ? "" : "აუცილებელი ველი");
             }}
           />
+
+          <span className="inline-block text-custom-red text-xs mt-1 min-h-[14px]">
+            {departmentError || ""}
+          </span>
         </div>
       </div>
 
