@@ -12,6 +12,8 @@ interface ValidatedTextFieldProps {
   ) => void;
   showCheckIcon?: boolean;
   multiline?: boolean;
+  minLength?: number;
+  maxLength?: number;
 }
 
 export default function ValidatedTextField({
@@ -23,26 +25,37 @@ export default function ValidatedTextField({
   onChange,
   showCheckIcon = true,
   multiline = false,
+  minLength = 2,
+  maxLength = 255,
 }: ValidatedTextFieldProps) {
-  const getMinTextColor = (value: string, touched: boolean) =>
-    !touched
-      ? "text-lighter-text"
-      : value.length >= 2
-      ? "text-custom-green"
-      : "text-custom-red";
+  const countWords = (text: string) =>
+    text.trim() ? text.trim().split(/\s+/).length : 0;
 
-  const getMaxTextColor = (value: string, touched: boolean) =>
-    !touched
-      ? "text-lighter-text"
-      : value.length <= 255
-      ? "text-custom-green"
-      : "text-custom-red";
+  const getMinTextColor = (value: string, touched: boolean) => {
+    if (!touched || value.trim() === "") return "text-lighter-text";
+    if (multiline) {
+      return countWords(value) >= 4 ? "text-custom-green" : "text-custom-red";
+    }
+    return value.length >= minLength ? "text-custom-green" : "text-custom-red";
+  };
 
-  const getMinIconColor = (value: string, touched: boolean) =>
-    !touched ? "#6c757d" : value.length >= 2 ? "#08a508" : "#fa4d4d";
+  const getMaxTextColor = (value: string, touched: boolean) => {
+    if (!touched || value.trim() === "") return "text-lighter-text";
+    return value.length <= maxLength ? "text-custom-green" : "text-custom-red";
+  };
 
-  const getMaxIconColor = (value: string, touched: boolean) =>
-    !touched ? "#6c757d" : value.length <= 255 ? "#08a508" : "#fa4d4d";
+  const getMinIconColor = (value: string, touched: boolean) => {
+    if (!touched || value.trim() === "") return "#6c757d";
+    if (multiline) {
+      return countWords(value) >= 4 ? "#08a508" : "#fa4d4d";
+    }
+    return value.length >= minLength ? "#08a508" : "#fa4d4d";
+  };
+
+  const getMaxIconColor = (value: string, touched: boolean) => {
+    if (!touched || value.trim() === "") return "#6c757d";
+    return value.length <= maxLength ? "#08a508" : "#fa4d4d";
+  };
 
   return (
     <div>
@@ -50,7 +63,7 @@ export default function ValidatedTextField({
         htmlFor={id}
         className="text-sm text-light-text font-medium leading-[100%] mb-[3px]"
       >
-        {label}*
+        {label}
       </label>
       {multiline ? (
         <textarea
@@ -74,7 +87,7 @@ export default function ValidatedTextField({
           <CheckIcon color={getMinIconColor(debouncedValue, touched)} />
         )}
         <span className={getMinTextColor(debouncedValue, touched)}>
-          მინიმუმ 2 სიმბოლო
+          {multiline ? "მინიმუმ 4 სიტყვა" : `მინიმუმ ${minLength} სიმბოლო`}
         </span>
       </div>
 
@@ -83,7 +96,7 @@ export default function ValidatedTextField({
           <CheckIcon color={getMaxIconColor(debouncedValue, touched)} />
         )}
         <span className={getMaxTextColor(debouncedValue, touched)}>
-          მაქსიმუმ 255 სიმბოლო
+          მაქსიმუმ {maxLength} სიმბოლო
         </span>
       </div>
     </div>

@@ -197,7 +197,7 @@ export default function CustomDatePicker({ onChange }: CustomDatePickerProps) {
         htmlFor="customDateInput"
         className="text-sm text-light-text font-medium leading-[100%] mb-[3px]"
       >
-        დედლაინი
+        დედლაინი*
       </label>
 
       <div

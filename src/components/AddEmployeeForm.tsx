@@ -144,7 +144,7 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
 
         <div className="col-span-2 mt-[29px] mb-[30px]">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-light-text font-medium leading-[100%] mb-[8px]">
+            <p className="text-sm text-light-text font-medium leading-[100%] mb-[6px]">
               ავატარი*
             </p>
           </div>
@@ -163,7 +163,7 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
 
         <div className="col-span-2 w-[350px]">
           <div className="flex items-center justify-between">
-            <label className="text-sm text-light-text font-medium leading-[100%] mb-[3px]">
+            <label className="text-sm text-light-text font-medium leading-[100%] mb-[6px]">
               დეპარტამენტი*
             </label>
           </div>
@@ -187,7 +187,7 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
           type="button"
           onClick={onClose}
           disabled={loading}
-          className="py-[10px] px-5 text-lg font-normal leading-[100%] rounded-[5px] border border-primary text-primary-text cursor-pointer hover:border-primary-light transition-colors duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-[102px] h-[42px] flex items-center justify-center font-normal leading-[100%] rounded-[5px] border border-primary text-primary-text cursor-pointer hover:border-primary-light transition-colors duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
         >
           გაუქმება
         </button>
