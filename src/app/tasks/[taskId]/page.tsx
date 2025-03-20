@@ -6,7 +6,7 @@ import { Task } from "@/types/types";
 export default async function TaskDetailsPage({
   params,
 }: {
-  params: { taskId: string };
+  params: Promise<{ taskId: string }>;
 }) {
   const { taskId } = await params;
   const task: Task | null = await fetchTask(taskId);
