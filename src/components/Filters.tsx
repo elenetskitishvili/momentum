@@ -113,13 +113,22 @@ export default function Filters({
       const updatedDepartments = selectedDepartments.filter((d) => d !== value);
       setLocalDepartments(updatedDepartments);
       setSelectedDepartments(updatedDepartments);
+      localStorage.setItem(
+        "selectedDepartments",
+        JSON.stringify(updatedDepartments)
+      );
     } else if (type === "priority") {
       const updatedPriorities = selectedPriorities.filter((p) => p !== value);
       setLocalPriorities(updatedPriorities);
       setSelectedPriorities(updatedPriorities);
+      localStorage.setItem(
+        "selectedPriorities",
+        JSON.stringify(updatedPriorities)
+      );
     } else if (type === "employee") {
       setLocalEmployee(null);
       setSelectedEmployee(null);
+      localStorage.removeItem("selectedEmployee");
     }
   };
 
@@ -158,6 +167,9 @@ export default function Filters({
             <FilteringModal
               filterType={openFilter}
               data={getFilterData()}
+              selectedDepartments={selectedDepartments}
+              selectedPriorities={selectedPriorities}
+              selectedEmployee={selectedEmployee}
               onClose={() => setOpenFilter(null)}
               onFilterChange={handleFilterChange}
             />

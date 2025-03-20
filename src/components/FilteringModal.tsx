@@ -9,6 +9,9 @@ interface FilteringModalProps {
   filterType: FilterType | null;
   onClose: () => void;
   data: Array<Department | Employee | Priority>;
+  selectedDepartments: string[];
+  selectedPriorities: string[];
+  selectedEmployee: Employee | null;
   onFilterChange: (selectedValues: string[]) => void;
 }
 
@@ -16,29 +19,56 @@ export default function FilteringModal({
   filterType,
   onClose,
   data,
+  selectedDepartments,
+  selectedPriorities,
+  selectedEmployee,
   onFilterChange,
 }: FilteringModalProps) {
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
-  const [selectedEmployee, setSelectedEmployee] = useState<number | null>(null);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(
+    null
+  );
   const [isMounted, setIsMounted] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (filterType) {
       setIsMounted(true);
+
+      if (filterType === "department") {
+        setCheckedItems(
+          data
+            .filter((item) => selectedDepartments.includes(item.name))
+            .map((item) => item.id)
+        );
+      } else if (filterType === "priority") {
+        setCheckedItems(
+          data
+            .filter((item) => selectedPriorities.includes(item.name))
+            .map((item) => item.id)
+        );
+      } else if (filterType === "employee" && selectedEmployee) {
+        setSelectedEmployeeId(selectedEmployee.id);
+      }
     } else {
       const timeout = setTimeout(() => {
         setIsMounted(false);
       }, 300);
       return () => clearTimeout(timeout);
     }
-  }, [filterType]);
+  }, [
+    filterType,
+    data,
+    selectedDepartments,
+    selectedPriorities,
+    selectedEmployee,
+  ]);
 
   if (!isMounted) return null;
 
   const handleChange = (id: number, isChecked: boolean) => {
     if (filterType === "employee") {
-      setSelectedEmployee(isChecked ? id : null);
+      setSelectedEmployeeId(isChecked ? id : null);
     } else {
       setCheckedItems((prev) =>
         isChecked ? [...prev, id] : prev.filter((item) => item !== id)
@@ -51,7 +81,7 @@ export default function FilteringModal({
 
     if (filterType === "employee") {
       selectedValues =
-        selectedEmployee !== null ? [selectedEmployee.toString()] : [];
+        selectedEmployeeId !== null ? [selectedEmployeeId.toString()] : [];
     } else {
       selectedValues = data
         .filter((item) => checkedItems.includes(item.id))
@@ -77,7 +107,7 @@ export default function FilteringModal({
               filterType={filterType!}
               checked={
                 filterType === "employee"
-                  ? selectedEmployee === item.id
+                  ? selectedEmployeeId === item.id
                   : checkedItems.includes(item.id)
               }
               onChange={(isChecked) => handleChange(item.id, isChecked)}
