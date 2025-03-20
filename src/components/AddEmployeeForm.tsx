@@ -38,6 +38,8 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
   const [department, setDepartment] = useState("");
   const [departmentError, setDepartmentError] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
   const { departments: departmentOptions } = useDepartments();
   const router = useRouter();
 
@@ -58,6 +60,7 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     const firstNameValidation = validateName(firstName);
     setFirstNameError(firstNameValidation);
@@ -79,8 +82,10 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
       lastNameValidation ||
       imgError ||
       departmentError
-    )
+    ) {
+      setLoading(false);
       return;
+    }
 
     try {
       await addEmployee({
@@ -93,6 +98,8 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
       onClose();
     } catch (error) {
       console.error("Error adding employee:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -179,15 +186,17 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
         <button
           type="button"
           onClick={onClose}
-          className="py-[10px] px-5 text-lg font-normal leading-[100%] rounded-[5px] border border-primary text-primary-text cursor-pointer hover:border-primary-light transition-colors duration-200 ease-in-out"
+          disabled={loading}
+          className="py-[10px] px-5 text-lg font-normal leading-[100%] rounded-[5px] border border-primary text-primary-text cursor-pointer hover:border-primary-light transition-colors duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
         >
           გაუქმება
         </button>
         <button
           type="submit"
-          className="py-2.5 px-5 text-lg font-normal leading-[100%] bg-primary text-white rounded-[5px] cursor-pointer hover:bg-primary-light transition-colors duration-200 ease-in-out"
+          disabled={loading}
+          className="w-[263px] h-[42px] flex items-center justify-center text-lg font-normal leading-[100%] bg-primary text-white rounded-[5px] cursor-pointer hover:bg-primary-light transition-colors duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span className="py-[12px]">დაამატე თანამშრომელი</span>
+          {loading ? "ემატება..." : "დაამატე თანამშრომელი"}
         </button>
       </div>
     </form>
