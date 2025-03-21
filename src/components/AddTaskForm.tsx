@@ -30,7 +30,7 @@ export default function AddTaskForm({
   const debouncedTitle = useDebouncedValue(title, 300);
 
   const [description, setDescription] = useState("");
-  const [descriptionTouched, setDescriptionTouched] = useState(true);
+  const [descriptionTouched] = useState(true);
   const debouncedDescription = useDebouncedValue(description, 300);
 
   const [department, setDepartment] = useState("");
@@ -72,6 +72,9 @@ export default function AddTaskForm({
 
   const [dueDate, setDueDate] = useState("");
   const [dueDateError, setDueDateError] = useState("");
+
+  const countWords = (text: string) =>
+    text.trim() ? text.trim().split(/\s+/).length : 0;
 
   useEffect(() => {
     const loadFormData = () => {
@@ -172,6 +175,13 @@ export default function AddTaskForm({
     if (dueDate.trim() === "") setDueDateError("სავალდებულოა");
 
     if (
+      description.trim() !== "" &&
+      (countWords(description) < 4 || description.length > 255)
+    ) {
+      return;
+    }
+
+    if (
       titleError ||
       departmentError ||
       employeeError ||
@@ -235,7 +245,9 @@ export default function AddTaskForm({
               სათაური*
             </label>
             {titleError && (
-              <span className="text-custom-red text-xs">{titleError}</span>
+              <span className="text-custom-red text-[10px] leading-[100%]">
+                {titleError}
+              </span>
             )}
           </div>
           <ValidatedTextField
@@ -280,9 +292,6 @@ export default function AddTaskForm({
             touched={descriptionTouched}
             debouncedValue={debouncedDescription}
             onChange={(e) => {
-              if (!descriptionTouched) {
-                setDescriptionTouched(true);
-              }
               setDescription(e.target.value);
               localStorage.setItem("addTaskDescription", e.target.value);
             }}
@@ -304,7 +313,9 @@ export default function AddTaskForm({
               პასუხისმგებელი თანამშრომელი*
             </label>
             {employeeError && (
-              <span className="text-custom-red text-xs">{employeeError}</span>
+              <span className="text-custom-red text-[10px] leading-[100%]">
+                {employeeError}
+              </span>
             )}
           </div>
           <CustomSelect

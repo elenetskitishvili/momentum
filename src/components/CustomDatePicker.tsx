@@ -9,7 +9,7 @@ interface CustomDatePickerProps {
   value?: string;
 }
 
-const georgianMonths = [
+const months = [
   "იანვარი",
   "თებერვალი",
   "მარტი",
@@ -34,7 +34,21 @@ function formatDate(date: Date): string {
 }
 
 function formatAPIDate(date: Date): string {
-  return date.toISOString().split("T")[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function parseAPIDate(dateStr: string): Date | null {
+  const parts = dateStr.split("-");
+  if (parts.length !== 3) return null;
+  const [yearStr, monthStr, dayStr] = parts;
+  const year = parseInt(yearStr, 10);
+  const month = parseInt(monthStr, 10) - 1;
+  const day = parseInt(dayStr, 10);
+  if (isNaN(year) || isNaN(month) || isNaN(day)) return null;
+  return new Date(year, month, day);
 }
 
 function parseDateString(value: string): Date | null {
@@ -79,39 +93,36 @@ export default function CustomDatePicker({
   const minDate = new Date();
   minDate.setHours(0, 0, 0, 0);
 
-  // State initialization
-  const [selectedDate, setSelectedDate] = useState<Date>(() => {
-    if (value) {
-      const parsed = new Date(value);
-      return isValidDate(parsed)
-        ? parsed
-        : new Date(minDate.getTime() + 86400000);
-    }
-    return new Date(minDate.getTime() + 86400000); // Default to tomorrow
-  });
+  const initialDate = value
+    ? parseAPIDate(value) || new Date(value)
+    : new Date(minDate.getTime() + 86400000);
+
+  const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
+  const [tempDate, setTempDate] = useState<Date>(initialDate);
 
   const [currentMonth, setCurrentMonth] = useState<number>(
-    selectedDate.getMonth()
+    initialDate.getMonth()
   );
   const [currentYear, setCurrentYear] = useState<number>(
-    selectedDate.getFullYear()
+    initialDate.getFullYear()
   );
   const [inputValue, setInputValue] = useState<string>(() => {
-    return value && isValidDate(new Date(value))
-      ? formatDate(new Date(value))
-      : formatDate(selectedDate);
+    if (value) {
+      const parsed = parseAPIDate(value) || new Date(value);
+      return isValidDate(parsed)
+        ? formatDate(parsed)
+        : formatDate(selectedDate);
+    }
+    return formatDate(selectedDate);
   });
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isValid, setIsValid] = useState<boolean>(true);
 
-  // Sync with external value changes
   useEffect(() => {
     if (value) {
-      const parsed = new Date(value);
+      const parsed = parseAPIDate(value) || new Date(value);
       if (isValidDate(parsed)) {
         setSelectedDate(parsed);
-        setCurrentMonth(parsed.getMonth());
-        setCurrentYear(parsed.getFullYear());
         setInputValue(formatDate(parsed));
       }
     }
@@ -124,9 +135,9 @@ export default function CustomDatePicker({
   }, [selectedDate, onChange]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setInputValue(value);
-    const parsed = parseDateString(value);
+    const val = e.target.value;
+    setInputValue(val);
+    const parsed = parseDateString(val);
     if (parsed && parsed.getTime() >= minDate.getTime()) {
       setIsValid(true);
     } else {
@@ -137,23 +148,24 @@ export default function CustomDatePicker({
   const handleInputBlur = () => {
     const parsed = parseDateString(inputValue);
     if (parsed && parsed.getTime() >= minDate.getTime()) {
-      if (!value) {
-        // Only update internal state if uncontrolled
-        setSelectedDate(parsed);
-        setCurrentMonth(parsed.getMonth());
-        setCurrentYear(parsed.getFullYear());
-      }
+      setSelectedDate(parsed);
       setInputValue(formatDate(parsed));
       setIsValid(true);
+      if (onChange) {
+        onChange(formatAPIDate(parsed));
+      }
     } else {
-      setInputValue(
-        value ? formatDate(new Date(value)) : formatDate(selectedDate)
-      );
+      setInputValue(formatDate(selectedDate));
       setIsValid(true);
     }
   };
 
   const toggleCalendar = () => {
+    if (!isOpen) {
+      setTempDate(selectedDate);
+      setCurrentMonth(selectedDate.getMonth());
+      setCurrentYear(selectedDate.getFullYear());
+    }
     setIsOpen((prev) => !prev);
   };
 
@@ -162,7 +174,11 @@ export default function CustomDatePicker({
   };
 
   const handleOk = () => {
-    setInputValue(formatDate(selectedDate));
+    setSelectedDate(tempDate);
+    setInputValue(formatDate(tempDate));
+    if (onChange) {
+      onChange(formatAPIDate(tempDate));
+    }
     setIsOpen(false);
   };
 
@@ -221,22 +237,18 @@ export default function CustomDatePicker({
   }
 
   function isSelected(day: number): boolean {
+    const compareDate = isOpen ? tempDate : selectedDate;
     return (
-      day === selectedDate.getDate() &&
-      currentMonth === selectedDate.getMonth() &&
-      currentYear === selectedDate.getFullYear()
+      day === compareDate.getDate() &&
+      currentMonth === compareDate.getMonth() &&
+      currentYear === compareDate.getFullYear()
     );
   }
 
   const handleDateSelection = (dayNum: number) => {
     const newDate = new Date(currentYear, currentMonth, dayNum);
-    if (!value) {
-      // Only update internal state if uncontrolled
-      setSelectedDate(newDate);
-    }
-    setInputValue(formatDate(newDate));
-    if (onChange) {
-      onChange(formatAPIDate(newDate));
+    if (isDaySelectable(dayNum)) {
+      setTempDate(newDate);
     }
   };
 
@@ -250,11 +262,11 @@ export default function CustomDatePicker({
       </label>
 
       <div
-        className={`flex items-center gap-1.5 py-3 px-2.5 text-sm leading-[100%] rounded-[5px] border ${
+        className={`h-[42px] flex items-center gap-1.5 px-2.5 text-sm leading-[100%] rounded-[5px] border ${
           isOpen
             ? "border-primary"
             : isValid
-            ? "border-custom-green"
+            ? "border-border-grey-darker"
             : "border-custom-red"
         } mb-1.5 w-full text-light-text`}
       >
@@ -281,7 +293,7 @@ export default function CustomDatePicker({
         <div className="absolute mt-2.5 w-[318px] bg-white shadow-[0px_12px_24px_0px_rgba(0,0,0,0.2)] z-10 ">
           <div className="flex items-center justify-between pt-[18px] px-4">
             <div className="font-bold text-sm">
-              {georgianMonths[currentMonth]} {currentYear}
+              {months[currentMonth]} {currentYear}
             </div>
             <div className="flex items-center gap-2">
               <button
