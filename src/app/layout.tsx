@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 
 import Header from "@/components/Header";
 import ClientProviders from "@/components/ClientProviders";
+import ClearFiltersOnPageChange from "@/components/ClearFiltersOnPageChange";
 
 export const metadata: Metadata = {
   title: {
@@ -67,6 +68,7 @@ export default function RootLayout({
     <html lang="en" className={firaGo.variable}>
       <ClientProviders>
         <body className="">
+          <ClearFiltersOnPageChange />
           <Header />
           <main className="max-w-[1920px] mx-auto px-[120px]">{children}</main>
         </body>

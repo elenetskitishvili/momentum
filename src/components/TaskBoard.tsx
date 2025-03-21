@@ -20,11 +20,34 @@ export default function TaskBoard({
 }: TaskBoardProps) {
   const { employees } = useEmployees();
 
-  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
-  const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
-    null
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>(
+    () => {
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("selectedDepartments");
+        return stored ? JSON.parse(stored) : [];
+      }
+      return [];
+    }
   );
+
+  const [selectedPriorities, setSelectedPriorities] = useState<string[]>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("selectedPriorities");
+      return stored ? JSON.parse(stored) : [];
+    }
+    return [];
+  });
+
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+    () => {
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("selectedEmployee");
+        return stored ? JSON.parse(stored) : null;
+      }
+      return null;
+    }
+  );
+
   const [loading, setLoading] = useState(true);
 
   const updateSelectedDepartments = useCallback((departments: string[]) => {
@@ -40,20 +63,6 @@ export default function TaskBoard({
   }, []);
 
   useEffect(() => {
-    const storedDepartments = localStorage.getItem("selectedDepartments");
-    const storedPriorities = localStorage.getItem("selectedPriorities");
-    const storedEmployee = localStorage.getItem("selectedEmployee");
-
-    if (storedDepartments) {
-      setSelectedDepartments(JSON.parse(storedDepartments));
-    }
-    if (storedPriorities) {
-      setSelectedPriorities(JSON.parse(storedPriorities));
-    }
-    if (storedEmployee) {
-      setSelectedEmployee(JSON.parse(storedEmployee));
-    }
-
     setLoading(false);
   }, []);
 
@@ -62,11 +71,16 @@ export default function TaskBoard({
       "selectedDepartments",
       JSON.stringify(selectedDepartments)
     );
+  }, [selectedDepartments]);
+
+  useEffect(() => {
     localStorage.setItem(
       "selectedPriorities",
       JSON.stringify(selectedPriorities)
     );
+  }, [selectedPriorities]);
 
+  useEffect(() => {
     if (selectedEmployee) {
       localStorage.setItem(
         "selectedEmployee",
@@ -75,7 +89,7 @@ export default function TaskBoard({
     } else {
       localStorage.removeItem("selectedEmployee");
     }
-  }, [selectedDepartments, selectedPriorities, selectedEmployee]);
+  }, [selectedEmployee]);
 
   const filteredTasks = useMemo(() => {
     if (loading) return [];
