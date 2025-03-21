@@ -25,7 +25,7 @@ export default function CustomCheckbox({
         onChange={(e) => onChange(e.target.checked)}
         className="hidden"
       />
-      <div className="w-[22px] h-[22px] border border-primary-text rounded-md flex items-center justify-center">
+      <div className="w-[22px] h-[22px] border-[1.5px] border-primary rounded-md flex items-center justify-center">
         {checked && (
           <svg
             width="14"
@@ -36,7 +36,7 @@ export default function CustomCheckbox({
           >
             <path
               d="M12.3334 1.33325L5.00008 8.66659L1.66675 5.33325"
-              stroke="#212529"
+              stroke="#8338ec"
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"

@@ -16,6 +16,11 @@ const formatGeorgianDate = (isoDate: string) => {
   return format(date, "d MMM, yyyy", { locale: ka });
 };
 
+const truncateText = (text: string | null, maxLength: number = 100) => {
+  if (!text) return "";
+  return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+};
+
 export default function TaskCard({ task, borderClass }: TaskCardProps) {
   return (
     <li className={`bg-white rounded-[15px] p-5 border ${borderClass}`}>
@@ -30,13 +35,17 @@ export default function TaskCard({ task, borderClass }: TaskCardProps) {
           </span>
         </div>
 
-        <div className="max-w-[320px] mx-auto flex flex-col gap-3">
+        <div className="max-w-[320px] flex flex-col gap-3">
           <h4 className="text-[15px] font-medium text-primary-text leading-[100%]">
             {task.name}
           </h4>
-          <p className="text-sm font-normal text-light-text line-clamp-2">
-            {task.description}
-          </p>
+          {task.description ? (
+            <p className="text-sm font-normal text-light-text line-clamp-2">
+              {truncateText(task.description)}
+            </p>
+          ) : (
+            <div className="w-full h-10"></div>
+          )}
         </div>
 
         <div className="flex items-center justify-between">
