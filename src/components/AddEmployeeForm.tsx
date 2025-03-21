@@ -1,20 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
-import { z } from "zod";
 import { addEmployee } from "@/actions/addEmployee";
-
-import ValidatedTextField from "./ValidatedTextField";
-import ImageUpload from "./ImageUpload";
-import CustomSelect from "./CustomSelect";
+import { useEmployees } from "@/context/EmployeeContext";
 import useDebouncedValue from "@/hooks/useDebouncedValue";
 import useDepartments from "@/hooks/useDepartments";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { z } from "zod";
+import CustomSelect from "./CustomSelect";
+import ImageUpload from "./ImageUpload";
+import ValidatedTextField from "./ValidatedTextField";
 
 const MAX_FILE_SIZE = 600 * 1024;
-
 const nameSchema = z.string().min(2).max(255);
-
 const validCharactersRegex = /^[ა-ჰa-zA-Z]*$/;
 
 interface AddEmployeeFormProps {
@@ -41,7 +38,7 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
   const [loading, setLoading] = useState(false);
 
   const { departments: departmentOptions } = useDepartments();
-  const router = useRouter();
+  const { refreshEmployees } = useEmployees();
 
   const validateName = (name: string) => {
     if (!name) return "აუცილებელი ველი";
@@ -94,7 +91,7 @@ export default function AddEmployeeForm({ onClose }: AddEmployeeFormProps) {
         department,
         image: image as File,
       });
-      router.refresh();
+      await refreshEmployees();
       onClose();
     } catch (error) {
       console.error("Error adding employee:", error);

@@ -1,41 +1,22 @@
 "use client";
-import { useState, useEffect } from "react";
-import { fetchEmployees } from "@/lib/data-service";
+import { useEmployees } from "@/context/EmployeeContext";
+import { useMemo } from "react";
 import { Employee } from "@/types/types";
 
 export default function useFilteredEmployees(
   selectedDepartment: number | null
 ) {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { employees, loading } = useEmployees();
 
-  useEffect(() => {
-    async function getEmployees() {
-      try {
-        const employees = await fetchEmployees();
-        setEmployees(employees);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong");
-      } finally {
-        setLoading(false);
-      }
-    }
-    getEmployees();
-  }, []);
-
-  useEffect(() => {
+  const filteredEmployees = useMemo(() => {
     if (selectedDepartment) {
-      setFilteredEmployees(
-        employees.filter(
-          (employee) => employee.department.id === selectedDepartment
-        )
+      return employees.filter(
+        (employee: Employee) => employee.department.id === selectedDepartment
       );
     } else {
-      setFilteredEmployees([]);
+      return [];
     }
   }, [selectedDepartment, employees]);
 
-  return { employees, filteredEmployees, loading, error };
+  return { employees, filteredEmployees, loading };
 }

@@ -1,19 +1,17 @@
 import TaskBoard from "@/components/TaskBoard";
 import {
   fetchDepartments,
-  fetchEmployees,
   fetchrPriorities,
   fetchStatuses,
   fetchTasks,
 } from "@/lib/data-service";
-import { Department, Employee, Priority, Status, Task } from "@/types/types";
+import { Department, Priority, Status, Task } from "@/types/types";
 
 export default async function Home() {
   const statuses: Status[] = await fetchStatuses();
   const allTasks: Task[] = await fetchTasks();
   const departments: Department[] = await fetchDepartments();
   const priorities: Priority[] = await fetchrPriorities();
-  const employees: Employee[] = await fetchEmployees();
 
   return (
     <>
@@ -28,7 +26,6 @@ export default async function Home() {
         statuses={statuses}
         departments={departments}
         priorities={priorities}
-        employees={employees}
       />
     </>
   );

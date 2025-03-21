@@ -3,6 +3,7 @@ import "./globals.css";
 import localFont from "next/font/local";
 
 import Header from "@/components/Header";
+import ClientProviders from "@/components/ClientProviders";
 
 export const metadata: Metadata = {
   title: {
@@ -64,10 +65,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={firaGo.variable}>
-      <body className="">
-        <Header />
-        <main className="max-w-[1920px] mx-auto px-[120px]">{children}</main>
-      </body>
+      <ClientProviders>
+        <body className="">
+          <Header />
+          <main className="max-w-[1920px] mx-auto px-[120px]">{children}</main>
+        </body>
+      </ClientProviders>
     </html>
   );
 }

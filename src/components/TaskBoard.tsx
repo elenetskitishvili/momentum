@@ -3,13 +3,13 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import Filters from "@/components/Filters";
 import StatusColumn from "@/components/StatusColumn";
 import { Department, Employee, Priority, Status, Task } from "@/types/types";
+import { useEmployees } from "@/context/EmployeeContext";
 
 interface TaskBoardProps {
   tasks: Task[];
   statuses: Status[];
   departments: Department[];
   priorities: Priority[];
-  employees: Employee[];
 }
 
 export default function TaskBoard({
@@ -17,8 +17,9 @@ export default function TaskBoard({
   statuses,
   departments,
   priorities,
-  employees,
 }: TaskBoardProps) {
+  const { employees } = useEmployees();
+
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(

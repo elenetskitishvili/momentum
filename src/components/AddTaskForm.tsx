@@ -43,17 +43,17 @@ export default function AddTaskForm({
 
   const [priority, setPriority] = useState("2");
   const [priorityError, setPriorityError] = useState("");
-  const priorityOptions = priorities.map((priority: Priority) => ({
-    value: priority.id.toString(),
-    label: priority.name,
-    icon: priority.icon,
+  const priorityOptions = priorities.map((p: Priority) => ({
+    value: p.id.toString(),
+    label: p.name,
+    icon: p.icon,
   }));
 
   const [status, setStatus] = useState("1");
   const [statusError, setStatusError] = useState("");
-  const statusOptions = statuses.map((status: Status) => ({
-    value: status.id.toString(),
-    label: status.name,
+  const statusOptions = statuses.map((s: Status) => ({
+    value: s.id.toString(),
+    label: s.name,
   }));
 
   const [employee, setEmployee] = useState("");
@@ -62,13 +62,13 @@ export default function AddTaskForm({
   const { filteredEmployees, loading: employeesLoading } =
     useFilteredEmployees(selectedDepartment);
 
-  const employeeOptions = filteredEmployees.map((employee: Employee) => ({
-    value: employee.id.toString(),
-    label: `${employee.name} ${employee.surname}`,
-    image: employee.avatar,
+  const employeeOptions = filteredEmployees.map((emp: Employee) => ({
+    value: emp.id.toString(),
+    label: `${emp.name} ${emp.surname}`,
+    image: emp.avatar,
   }));
 
-  const isEmployeeSelectDisabled = !selectedDepartment || employeesLoading;
+  const isEmployeeSelectDisabled = department.trim() === "" || employeesLoading;
 
   const [dueDate, setDueDate] = useState("");
   const [dueDateError, setDueDateError] = useState("");
@@ -361,7 +361,7 @@ export default function AddTaskForm({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="gap-1 w-[208px] h-[42px] flex items-center justify-center text-lg font-normal leading-[100%] bg-primary text-white rounded-[5px] cursor-pointer hover:bg-primary-light transition-colors duration-200 ease-in-out"
+            className="gap-1 w-[208px] h-[42px] flex items-center justify-center text-lg font-normal leading-[100%] bg-primary text-white rounded-[5px] cursor-pointer hover:bg-primary-light transition-colors duration-200 ease-in-out disabled:cursor-not-allowed"
           >
             {isSubmitting ? "დაელოდეთ..." : "დავალების შექმნა"}
           </button>
