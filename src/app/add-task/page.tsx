@@ -5,6 +5,10 @@ import {
   fetchStatuses,
 } from "@/lib/data-service";
 
+export const metadata = {
+  title: "Add Task",
+};
+
 export default async function AddTask() {
   const departments = await fetchDepartments();
   const priorities = await fetchrPriorities();

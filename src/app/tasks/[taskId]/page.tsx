@@ -3,6 +3,10 @@ import TaskDetails from "@/components/TaskDetails";
 import { fetchTask } from "@/lib/data-service";
 import { Task } from "@/types/types";
 
+export const metadata = {
+  title: "Task",
+};
+
 export default async function TaskDetailsPage({
   params,
 }: {
