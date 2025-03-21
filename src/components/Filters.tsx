@@ -148,8 +148,7 @@ export default function Filters({
     <div className="relative w-auto mt-[52px] mb-[24px]">
       {loading ? (
         <div className="flex justify-center items-center h-[100px]">
-          <span className="animate-spin h-6 w-6 border-4 border-primary border-t-transparent rounded-full"></span>
-          <p className="mt-2 text-gray-500">Loading filters...</p>
+          <p className="mt-2 text-gray-500"></p>
         </div>
       ) : (
         <>

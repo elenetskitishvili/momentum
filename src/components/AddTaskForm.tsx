@@ -8,6 +8,7 @@ import CustomDatePicker from "./CustomDatePicker";
 import useFilteredEmployees from "@/hooks/useFilteredEmployees";
 import { Department, Employee, Priority, Status } from "@/types/types";
 import { addTask } from "@/actions/addTask";
+import FormSkeleton from "./FormSkeleton";
 
 interface AddTaskFormProps {
   departments: Department[];
@@ -229,11 +230,7 @@ export default function AddTaskForm({
   };
 
   if (!isLoaded) {
-    return (
-      <div className="w-full h-[50vh] flex items-center justify-center">
-        loading...
-      </div>
-    );
+    return <FormSkeleton />;
   }
 
   return (

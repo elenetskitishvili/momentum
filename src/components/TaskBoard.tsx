@@ -4,6 +4,7 @@ import Filters from "@/components/Filters";
 import StatusColumn from "@/components/StatusColumn";
 import { Department, Employee, Priority, Status, Task } from "@/types/types";
 import { useEmployees } from "@/context/EmployeeContext";
+import TaskBoardSkeleton from "./TaskBoardSkeleton";
 
 interface TaskBoardProps {
   tasks: Task[];
@@ -128,10 +129,7 @@ export default function TaskBoard({
   return (
     <>
       {loading ? (
-        <div className="flex flex-col items-center justify-center h-screen">
-          <span className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full"></span>
-          <p className="mt-3 text-gray-500">Loading tasks and filters...</p>
-        </div>
+        <TaskBoardSkeleton />
       ) : (
         <>
           <Filters
