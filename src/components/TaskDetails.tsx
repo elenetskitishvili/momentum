@@ -25,7 +25,9 @@ export default async function TaskDetails({ task }: { task: Task }) {
         <h1 className="text-primary-text font-semibold text-[34px] leading-[100%] mb-[21px]">
           {task.name}
         </h1>
-        <p className="text-black leading-[150%] text-lg">{task.description}</p>
+        <p className="text-black leading-[150%] text-lg">
+          {task.description || "აღწერა არ არის"}
+        </p>
       </div>
       <div className="">
         <h2 className="text-2xl text-custom-dark font-medium leading-[100%] mb-7">

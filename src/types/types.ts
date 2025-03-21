@@ -3,7 +3,7 @@ export interface Employee {
   name: string;
   surname: string;
   avatar: string;
-  department: Department; // ✅ Reused Department interface
+  department: Department;
 }
 
 export interface Department {
@@ -35,7 +35,7 @@ export interface Comment {
 export interface Task {
   id: number;
   name: string;
-  description: string;
+  description: string | null;
   due_date: string;
   department: Department;
   employee: Employee;

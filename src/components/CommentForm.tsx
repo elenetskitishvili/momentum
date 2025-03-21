@@ -59,7 +59,7 @@ export default function CommentForm({
       />
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || !text.trim()}
         className="self-end mb-[15px] mr-5 text-white font-normal text-base leading-[100%] rounded-full bg-primary hover:bg-primary-light transition-colors duration-300 ease-in-out cursor-pointer py-2 px-[19px]"
       >
         {loading ? "იგზავნება..." : buttonText}
