@@ -46,6 +46,7 @@ export async function addComment({
 
   const data = (await response.json()) as AddCommentResponse;
 
+  revalidatePath(`/`);
   revalidatePath(`/tasks/${taskId}`);
 
   return data;
