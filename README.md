@@ -2,6 +2,12 @@
 
 Momentum is a **Progress Tracking** application where **Redberry** can manage employees and their delegated tasks efficiently.
 
+## Technologies Used
+
+- **Next.js (App Router)**
+- **TypeScript**
+- **Tailwind CSS**
+
 ## Features
 
 ### Task List Page (Dashboard)
@@ -90,12 +96,6 @@ Users can create new tasks with the following fields:
 - **Real-time validation** applied.
 
 ---
-
-## Technologies Used
-
-- **Next.js (App Router)**
-- **TypeScript**
-- **Tailwind CSS**
 
 ## Setup & Installation
 
