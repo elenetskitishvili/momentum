@@ -45,6 +45,7 @@ export async function addEmployee(
   const data = (await response.json()) as Employee;
 
   revalidatePath("/add-task");
+  revalidatePath("/");
 
   return data;
 }
