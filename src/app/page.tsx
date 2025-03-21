@@ -7,10 +7,6 @@ import {
 } from "@/lib/data-service";
 import { Department, Priority, Status, Task } from "@/types/types";
 
-export const metadata = {
-  title: "Tasks",
-};
-
 export default async function Home() {
   const statuses: Status[] = await fetchStatuses();
   const allTasks: Task[] = await fetchTasks();
